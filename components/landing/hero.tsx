@@ -32,16 +32,15 @@ export function Hero() {
         <p>Diseñamos, lanzamos y cuidamos la web de tu negocio. Todo en un mismo sitio, sin complicarte.</p>
       </div>
 
-      <div className="hero-window" aria-label="Vista previa de un proyecto web conceptual">
-        <div className="window-bar"><i /><i /><i /><span>cafénube.es</span></div>
+      <div className="hero-window" aria-label="Vista previa de una web conceptual para un negocio">
+        <div className="window-bar"><i /><i /><i /><span>ejemplo-web.com</span></div>
         <div className="window-content">
-          {/* Already optimized AVIF; native markup avoids shipping an image runtime. */}
           {/* oxlint-disable-next-line next/no-img-element */}
-          <img src="/images/cafe-nube.avif" width="1536" height="1024" fetchPriority="high" alt="Café y bollería sobre la barra de una cafetería contemporánea" />
+          <img src="/images/tienda-online-generica.jpg" width="1536" height="1024" fetchPriority="high" alt="Ejemplo visual de una tienda online de productos sin marca" />
           <div className="window-overlay">
-            <span>CAFÉ NUBE</span>
-            <strong>Tu pausa<br />favorita.</strong>
-            <small>Proyecto conceptual</small>
+            <span>UNA WEB PARA TU NEGOCIO</span>
+            <strong>Hecha para<br />hacerse notar.</strong>
+            <small>Ejemplo conceptual</small>
           </div>
         </div>
       </div>

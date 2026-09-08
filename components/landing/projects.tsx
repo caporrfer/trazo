@@ -1,10 +1,19 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, MoveHorizontal } from 'lucide-react';
+import {
+  Carousel,
+  type CarouselApi,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/ui/carousel';
 import { projects } from './content';
 
 export function Projects() {
   const [active, setActive] = useState(0);
+  const [mobileActive, setMobileActive] = useState(0);
+  const [mobileApi, setMobileApi] = useState<CarouselApi>();
   const items = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
@@ -22,14 +31,28 @@ export function Projects() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!mobileApi) return;
+
+    const updateMobileActive = () => setMobileActive(mobileApi.selectedScrollSnap());
+    updateMobileActive();
+    mobileApi.on('select', updateMobileActive);
+    mobileApi.on('reInit', updateMobileActive);
+
+    return () => {
+      mobileApi.off('select', updateMobileActive);
+      mobileApi.off('reInit', updateMobileActive);
+    };
+  }, [mobileApi]);
+
   const current = projects[active];
 
   return (
     <section id="proyectos" className="projects-section" aria-labelledby="projects-title">
       <div className="section-intro section-intro--projects">
-        <p className="eyebrow eyebrow--light"><span /> Ideas que podrían ser la tuya</p>
-        <h2 id="projects-title">No hacemos webs<br /><em>para rellenar.</em></h2>
-        <p className="section-lead">Las hacemos para contar por qué tu negocio merece una visita, una llamada o un próximo paso.</p>
+        <p className="eyebrow eyebrow--light"><span /> Webs para cada tipo de negocio</p>
+        <h2 id="projects-title">Tu negocio,<br /><em>bien contado.</em></h2>
+        <p className="section-lead">Diseñamos la experiencia alrededor de lo que necesitas conseguir: reservas, ventas o nuevos contactos.</p>
       </div>
 
       <div className="project-scroll">
@@ -44,7 +67,7 @@ export function Projects() {
             >
               <div className="project-meta">
                 <span>{project.number}</span>
-                <span>Proyecto conceptual</span>
+                <span>Ejemplo de sector</span>
               </div>
               <p className="project-category">{project.category}</p>
               <h3>{project.name}</h3>
@@ -66,7 +89,7 @@ export function Projects() {
               <img src={current.image} width="1536" height="1024" alt={current.alt} />
               <div className="concept-nav"><strong>{current.name}</strong><span>Descubrir</span></div>
               <div className="concept-copy"><small>{current.category}</small><strong>{current.headline}</strong></div>
-              <span className="concept-label">Proyecto conceptual</span>
+              <span className="concept-label">Ejemplo conceptual</span>
             </div>
           </div>
           <div className="phone-frame" key={`${current.id}-mobile`}>
@@ -80,19 +103,55 @@ export function Projects() {
         </div>
 
         <div className="mobile-projects">
-          {projects.map((project) => (
-            <article className="mobile-project-card" key={`${project.id}-card`}>
-              <div className="project-meta"><span>{project.number}</span><span>Proyecto conceptual</span></div>
-              <div className="mobile-project-image">
-                {/* oxlint-disable-next-line next/no-img-element */}
-                <img src={project.image} width="1536" height="1024" alt={project.alt} loading="lazy" decoding="async" />
-                <strong>{project.name}</strong>
-              </div>
-              <p className="project-category">{project.category}</p>
-              <h3>{project.headline}</h3>
-              <p>{project.description}</p>
-            </article>
-          ))}
+          <div className="mobile-swipe-cue" aria-hidden="true">
+            <MoveHorizontal />
+            <span>Desliza para explorar</span>
+            <ArrowRight />
+          </div>
+
+          <Carousel
+            aria-label="Tipos de negocio"
+            className="mobile-project-carousel"
+            opts={{ align: 'start', containScroll: 'trimSnaps' }}
+            setApi={setMobileApi}
+          >
+            <CarouselContent className="mobile-project-track">
+              {projects.map((project) => (
+                <CarouselItem className="mobile-project-slide" key={`${project.id}-card`}>
+                  <article className="mobile-project-card">
+                    <div className="project-meta"><span>{project.number}</span><span>Ejemplo de sector</span></div>
+                    <div className="mobile-browser">
+                      <div className="mobile-browser-top"><span><i /><i /><i /></span><small>{project.url}</small></div>
+                      <div className="mobile-project-image">
+                        {/* oxlint-disable-next-line next/no-img-element */}
+                        <img src={project.image} width="1536" height="1024" alt={project.alt} loading="lazy" decoding="async" />
+                        <strong>{project.name}</strong>
+                      </div>
+                    </div>
+                    <p className="project-category">{project.category}</p>
+                    <h3>{project.headline}</h3>
+                    <p>{project.description}</p>
+                  </article>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+
+          <div className="mobile-carousel-progress" aria-label={`Ejemplo ${mobileActive + 1} de ${projects.length}`}>
+            <span>0{mobileActive + 1}</span>
+            <div className="mobile-carousel-dots">
+              {projects.map((project, index) => (
+                <button
+                  aria-label={`Ver ${project.name}`}
+                  aria-current={mobileActive === index ? 'true' : undefined}
+                  key={`${project.id}-dot`}
+                  onClick={() => mobileApi?.scrollTo(index)}
+                  type="button"
+                />
+              ))}
+            </div>
+            <span>0{projects.length}</span>
+          </div>
         </div>
       </div>
     </section>

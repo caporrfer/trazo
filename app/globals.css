@@ -266,6 +266,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 .stage-counter { align-items: center; bottom: 2%; display: flex; font-size: .62rem; gap: 12px; left: 2%; position: absolute; }
 .stage-counter i { background: var(--sky); height: 1px; width: 50px; }
 .mobile-projects { display: none; }
+.mobile-swipe-cue,
+.mobile-carousel-progress { display: none; }
 
 /* Service */
 .service-section { background: var(--sky); padding: clamp(110px, 14vw, 210px) clamp(20px, 5vw, 78px); position: relative; }
@@ -362,14 +364,31 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   .section-lead, .service-heading > p:last-child { margin: 32px 0 0; }
   .project-scroll { display: block; margin-top: 70px; }
   .project-descriptions, .project-stage { display: none; }
-  .mobile-projects { display: grid; gap: 85px; }
-  .mobile-project-card .project-meta { margin-bottom: 24px; }
-  .mobile-project-image { border: 1.5px solid var(--sky); height: min(78vw, 620px); overflow: hidden; position: relative; }
+  .mobile-projects { display: block; }
+  .mobile-swipe-cue { align-items: center; display: flex; font-size: .72rem; font-weight: 800; gap: 10px; letter-spacing: .08em; margin: 0 0 28px; text-transform: uppercase; }
+  .mobile-swipe-cue svg { height: 18px; width: 18px; }
+  .mobile-swipe-cue svg:last-child { animation: swipe-nudge 1.6s ease-in-out infinite; margin-left: auto; }
+  @keyframes swipe-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
+  .mobile-project-carousel { overflow: visible; width: 100%; }
+  .mobile-project-track { align-items: stretch; }
+  .mobile-project-slide { flex-basis: min(82vw, 620px); padding-left: 18px; }
+  .mobile-project-card { height: 100%; padding-bottom: 8px; }
+  .mobile-project-card .project-meta { margin-bottom: 20px; }
+  .mobile-browser { background: var(--white); border: 1.5px solid var(--sky); color: var(--chocolate); overflow: hidden; }
+  .mobile-browser-top { align-items: center; border-bottom: 1px solid var(--chocolate); display: grid; grid-template-columns: 1fr 2fr 1fr; height: 32px; padding: 0 10px; }
+  .mobile-browser-top > span { display: flex; gap: 5px; }
+  .mobile-browser-top i { background: var(--chocolate); border-radius: 50%; display: block; height: 5px; width: 5px; }
+  .mobile-browser-top small { background: rgba(56,37,31,.08); border-radius: 99px; font-size: .48rem; justify-self: center; overflow: hidden; padding: 4px 12px; text-overflow: ellipsis; white-space: nowrap; }
+  .mobile-project-image { height: min(66vw, 500px); overflow: hidden; position: relative; }
   .mobile-project-image::after { background: linear-gradient(transparent, rgba(32,21,17,.8)); content: ''; inset: 0; position: absolute; }
   .mobile-project-image img { height: 100%; object-fit: cover; width: 100%; }
   .mobile-project-image strong { bottom: 24px; font-family: var(--font-display); font-size: clamp(2.7rem, 11vw, 5rem); left: 22px; letter-spacing: -.065em; line-height: .9; position: absolute; z-index: 2; }
   .mobile-project-card h3 { font-family: var(--font-display); font-size: clamp(2rem, 7vw, 3.2rem); letter-spacing: -.06em; line-height: 1; margin: 0; }
   .mobile-project-card > p:last-child { font-size: .95rem; line-height: 1.65; margin: 20px 0 0; max-width: 600px; }
+  .mobile-carousel-progress { align-items: center; display: grid; font-size: .64rem; font-weight: 800; gap: 14px; grid-template-columns: auto 1fr auto; margin-top: 34px; }
+  .mobile-carousel-dots { align-items: center; display: flex; gap: 7px; }
+  .mobile-carousel-dots button { background: rgba(169,221,243,.25); border: 0; cursor: pointer; height: 3px; padding: 0; transition: background .25s ease, flex-grow .25s ease; flex: 1; }
+  .mobile-carousel-dots button[aria-current='true'] { background: var(--sky); flex-grow: 2; }
   .service-cards { grid-template-columns: 1fr; margin-top: 75px; }
   .service-card, .service-card:nth-child(2), .service-card:nth-child(3) { min-height: 310px; transform: none; }
   .service-card:hover, .service-card:nth-child(2):hover { transform: translateY(-5px); }
@@ -386,6 +405,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 
 @media (max-width: 560px) {
   .projects-section, .service-section, .process-section, .faq-section { padding-left: 20px; padding-right: 20px; }
+  .mobile-project-slide { flex-basis: 82vw; }
+  .mobile-project-image { height: 66vw; }
   .section-intro h2, .service-heading h2, .process-header h2, .faq-heading h2 { font-size: clamp(3.25rem, 15vw, 5rem); }
   .service-callout { display: block; }
   .service-callout > svg { margin-bottom: 26px; }
