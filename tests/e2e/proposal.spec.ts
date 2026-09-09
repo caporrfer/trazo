@@ -30,6 +30,18 @@ test("la propuesta abre directamente en la primera pregunta", async ({
     page.getByRole("link", { name: "Ver la propuesta web" }),
   ).toBeVisible();
   await expect(page.getByText("Restaurante Paco", { exact: true })).toBeVisible();
+  const proposalButton = await page
+    .getByRole("link", { name: "Ver la propuesta web" })
+    .boundingBox();
+  const businessName = await page
+    .getByText("Restaurante Paco", { exact: true })
+    .boundingBox();
+  expect(proposalButton?.width).toBeGreaterThan(350);
+  expect(
+    Math.abs(
+      (businessName?.x || 0) + (businessName?.width || 0) / 2 - 195,
+    ),
+  ).toBeLessThan(4);
   const question = await page
     .getByRole("heading", { name: "¿Has podido ver el borrador?" })
     .boundingBox();
@@ -69,7 +81,7 @@ test("envía una opinión sin datos personales", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Revisa tus respuestas" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Enviar mi opinión" }).click();
+  await page.getByRole("button", { name: "Enviar" }).click();
   await expect(
     page.getByRole("heading", { name: /Gracias por contarnos/ }),
   ).toBeVisible();

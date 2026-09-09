@@ -149,13 +149,8 @@ export const plans = [
 ] as const;
 
 export function finalButtonLabel(answers: FormAnswers) {
-  if (answers.intent === "changes") return "Enviar";
-  if (answers.intent === "demo_help") return "Solicitar ayuda";
-  if (answers.intent === "information") return "Solicitar información";
-  if (answers.intent === "talk" && answers.contactMethod === "phone")
-    return "Pedir una llamada";
-  if (answers.intent === "talk") return "Solicitar contacto";
-  return "Enviar mi opinión";
+  void answers;
+  return "Enviar";
 }
 
 export function confirmationCopy(intent?: Intent, contact?: string) {

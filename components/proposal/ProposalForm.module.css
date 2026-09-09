@@ -310,21 +310,29 @@
 @media (max-width: 560px) {
   .masthead {
     width: min(100% - 1rem, 760px);
-    padding-block: 0.65rem;
+    padding-block: 0.9rem 0.75rem;
     align-items: center;
-    display: grid;
-    grid-template-columns: auto 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .masthead :global(.brand) {
+    align-self: center;
   }
   .proposalIdentity {
-    grid-column: 1 / -1;
     width: 100%;
-    align-items: stretch;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    justify-items: center;
     gap: 0.55rem;
-    margin-left: 0;
-    padding-top: 0.45rem;
+    margin: 0;
+    padding: 0;
+    text-align: center;
   }
   .proposalIdentity a {
+    width: min(100%, 430px);
+    justify-self: center;
     justify-content: center;
     min-height: 56px;
     padding: 0.75rem 1rem;
@@ -339,6 +347,7 @@
     background: var(--green-dark);
   }
   .proposalIdentity strong {
+    justify-self: center;
     max-width: none;
     overflow: visible;
     text-overflow: clip;
@@ -346,6 +355,10 @@
     color: var(--green-dark);
     font-size: clamp(1.35rem, 6vw, 1.8rem);
     line-height: 1.05;
+    text-wrap: balance;
+  }
+  .secureNote {
+    justify-content: center;
   }
   .secureNote span {
     display: none;
