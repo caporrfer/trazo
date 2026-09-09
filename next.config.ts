@@ -6,7 +6,10 @@ const scriptPolicy =
     : "'self' 'unsafe-inline'";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // Vercel inyecta un adaptador de compilación y no utiliza la salida standalone.
+  // Mantenerla allí activa un fallo de Next 16.3 al copiar los trazados NFT.
+  // Fuera de Vercel se conserva para la imagen Docker y el autoalojamiento.
+  output: process.env.VERCEL ? undefined : "standalone",
   allowedDevOrigins: ["127.0.0.1"],
   poweredByHeader: false,
   experimental: {
