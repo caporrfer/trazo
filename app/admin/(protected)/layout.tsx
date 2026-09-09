@@ -1,7 +1,7 @@
-import { FileText, LayoutDashboard, MessageSquareText } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
+import { AdminNav } from "@/components/admin/AdminNav";
+import { Brand } from "@/components/Brand";
 import styles from "@/components/admin/Admin.module.css";
 import { SignOutButton } from "../SignOutButton";
 
@@ -24,12 +24,7 @@ export default async function ProtectedAdminLayout({
       )}
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <Link className="brand" href="/admin">
-            <span className="brand-mark" aria-hidden="true">
-              t
-            </span>
-            Trazo
-          </Link>
+          <Brand href="/admin" compact inverse />
           <div className={styles.account}>
             <span>{admin.email}</span>
             <SignOutButton demo={admin.demo} />
@@ -37,20 +32,7 @@ export default async function ProtectedAdminLayout({
         </div>
       </header>
       <div className={styles.layout}>
-        <nav className={styles.nav} aria-label="Administración">
-          <Link href="/admin" aria-label="Resumen">
-            <LayoutDashboard aria-hidden="true" />
-            <span>Resumen</span>
-          </Link>
-          <Link href="/admin/propuestas" aria-label="Propuestas">
-            <FileText aria-hidden="true" />
-            <span>Propuestas</span>
-          </Link>
-          <Link href="/admin/respuestas" aria-label="Respuestas">
-            <MessageSquareText aria-hidden="true" />
-            <span>Respuestas</span>
-          </Link>
-        </nav>
+        <AdminNav />
         <main id="contenido" className={styles.main}>
           {children}
         </main>

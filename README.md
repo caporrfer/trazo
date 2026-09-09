@@ -14,7 +14,7 @@ npm run dev
 
 Con `TRAZO_DEMO_MODE=true` se habilitan una propuesta y un dashboard de demostración. Este modo se desactiva automáticamente en compilaciones de producción.
 
-Propuesta local: `http://localhost:3000/propuesta/restaurante-paco/demo-seguro-trazo-2026`
+Propuesta local: `http://localhost:3000/propuesta/restaurante-paco`
 
 Dashboard local: `http://localhost:3000/admin`
 
@@ -55,4 +55,4 @@ La migración futura del backend gestionado a Supabase autoalojado debe ensayars
 
 ## Producción
 
-Antes de publicar, completa los datos legales, cambia `RATE_LIMIT_SECRET`, verifica copias externas y ejecuta el guion de aceptación. Las previsualizaciones deben utilizar un proyecto Supabase de pruebas y nunca las credenciales de producción.
+Antes de publicar, configura `NEXT_PUBLIC_APP_URL=https://formulariotrazo.es`, completa los datos legales, cambia `RATE_LIMIT_SECRET`, verifica copias externas y ejecuta el guion de aceptación. Las previsualizaciones deben utilizar un proyecto Supabase de pruebas y nunca las credenciales de producción.

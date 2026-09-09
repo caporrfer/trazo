@@ -12,8 +12,9 @@ major_version = 17
 
 [auth]
 enabled = true
-site_url = "https://trazo-psi.vercel.app"
+site_url = "https://formulariotrazo.es"
 additional_redirect_urls = [
+  "https://formulariotrazo.es/auth/callback",
   "https://trazo-psi.vercel.app/auth/callback",
   "https://trazo-git-codex-test-new-form-trazo4.vercel.app/auth/callback",
   "http://localhost:3000/auth/callback",

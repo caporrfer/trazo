@@ -8,6 +8,7 @@ import {
 import { searchAdminResponses } from "@/lib/repository";
 import styles from "@/components/admin/Admin.module.css";
 import { Pagination } from "@/components/admin/Pagination";
+import { ResponsiveFilters } from "@/components/admin/ResponsiveFilters";
 
 export default async function ResponsesPage({
   searchParams,
@@ -25,6 +26,9 @@ export default async function ResponsesPage({
       Boolean(entry[1]),
     ),
   ).toString();
+  const hasAdvancedFilters = Boolean(
+    query.from || query.to || query.intent || query.plan || query.read,
+  );
   return (
     <>
       <div className={styles.topline}>
@@ -44,79 +48,91 @@ export default async function ResponsesPage({
           La respuesta se ha eliminado.
         </p>
       )}
-      <form className={styles.filters}>
-        <label className={styles.field}>
-          <span className="sr-only">Buscar negocio</span>
-          <input
-            className={styles.input}
-            name="q"
-            defaultValue={query.q}
-            placeholder="Buscar negocio"
-          />
-        </label>
-        <label className={styles.field}>
-          <span>Desde</span>
-          <input
-            className={styles.input}
-            type="date"
-            name="from"
-            defaultValue={query.from}
-          />
-        </label>
-        <label className={styles.field}>
-          <span>Hasta</span>
-          <input
-            className={styles.input}
-            type="date"
-            name="to"
-            defaultValue={query.to}
-          />
-        </label>
-        <label className={styles.field}>
-          <span className="sr-only">Intención</span>
-          <select
-            className={styles.select}
-            name="intent"
-            defaultValue={query.intent}
-          >
-            <option value="">Todas las intenciones</option>
-            {Object.entries(intentLabels).map(([id, text]) => (
-              <option value={id} key={id}>
-                {text}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          <span className="sr-only">Tarifa</span>
-          <select
-            className={styles.select}
-            name="plan"
-            defaultValue={query.plan}
-          >
-            <option value="">Todas las tarifas</option>
-            {Object.entries(planLabels).map(([id, text]) => (
-              <option value={id} key={id}>
-                {text}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          <span className="sr-only">Estado de respuesta</span>
-          <select
-            className={styles.select}
-            name="read"
-            defaultValue={query.read}
-          >
-            <option value="">Todas</option>
-            <option value="new">Nuevas</option>
-            <option value="pending">Pendientes</option>
-          </select>
-        </label>
-        <button className="button button-secondary" type="submit">
-          Filtrar
-        </button>
+      <form className={styles.filterForm}>
+        <div className={styles.filterPrimary}>
+          <label className={styles.field}>
+            <span className="sr-only">Buscar negocio</span>
+            <input
+              className={styles.input}
+              name="q"
+              defaultValue={query.q}
+              placeholder="Buscar negocio"
+            />
+          </label>
+          <button className="button button-secondary" type="submit">
+            Buscar
+          </button>
+        </div>
+        <ResponsiveFilters active={hasAdvancedFilters}>
+          <summary>
+            Más filtros{hasAdvancedFilters ? " · activos" : ""}
+          </summary>
+          <div className={`${styles.filterGrid} ${styles.filterGridWide}`}>
+            <label className={styles.field}>
+              <span>Desde</span>
+              <input
+                className={styles.input}
+                type="date"
+                name="from"
+                defaultValue={query.from}
+              />
+            </label>
+            <label className={styles.field}>
+              <span>Hasta</span>
+              <input
+                className={styles.input}
+                type="date"
+                name="to"
+                defaultValue={query.to}
+              />
+            </label>
+            <label className={styles.field}>
+              <span className="sr-only">Intención</span>
+              <select
+                className={styles.select}
+                name="intent"
+                defaultValue={query.intent}
+              >
+                <option value="">Todas las intenciones</option>
+                {Object.entries(intentLabels).map(([id, text]) => (
+                  <option value={id} key={id}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={styles.field}>
+              <span className="sr-only">Tarifa</span>
+              <select
+                className={styles.select}
+                name="plan"
+                defaultValue={query.plan}
+              >
+                <option value="">Todas las tarifas</option>
+                {Object.entries(planLabels).map(([id, text]) => (
+                  <option value={id} key={id}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={styles.field}>
+              <span className="sr-only">Estado de respuesta</span>
+              <select
+                className={styles.select}
+                name="read"
+                defaultValue={query.read}
+              >
+                <option value="">Todas</option>
+                <option value="new">Nuevas</option>
+                <option value="pending">Pendientes</option>
+              </select>
+            </label>
+            <button className="button button-secondary" type="submit">
+              Aplicar filtros
+            </button>
+          </div>
+        </ResponsiveFilters>
       </form>
       <section className={styles.panel}>
         <div className={styles.list}>

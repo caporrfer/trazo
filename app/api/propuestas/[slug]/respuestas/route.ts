@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { submitProposalResponse } from "@/lib/proposal-submission";
-import { getLegacyPublicProposal } from "@/lib/repository";
+import { getPublicProposal } from "@/lib/repository";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string; token: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
-  const { slug, token } = await params;
-  const proposal = await getLegacyPublicProposal(slug, token);
+  const { slug } = await params;
+  const proposal = await getPublicProposal(slug);
   if (!proposal)
     return NextResponse.json(
       { message: "Esta propuesta ya no está disponible." },

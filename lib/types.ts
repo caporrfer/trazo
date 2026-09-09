@@ -52,7 +52,6 @@ export interface ProposalPublic {
   businessName: string;
   businessType: string;
   slug: string;
-  token: string;
   demoUrl: string;
   active: boolean;
   formVersion: number;

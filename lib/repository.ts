@@ -1,4 +1,8 @@
-import { demoAdminProposals, demoProposal } from "./demo-data";
+import {
+  demoAdminProposals,
+  demoProposal,
+  demoProposalToken,
+} from "./demo-data";
 import { demoResponses } from "./demo-store";
 import type { AdminProposal, AdminResponse, ProposalPublic } from "./types";
 import { hasSupabaseConfig, isDemoMode } from "./supabase/config";
@@ -14,7 +18,6 @@ function mapProposal(row: Record<string, unknown>): ProposalPublic {
     businessName: business?.name || "Negocio",
     businessType: business?.business_type || "Negocio",
     slug: String(row.slug),
-    token: String(row.public_token),
     demoUrl: String(row.demo_url),
     active: Boolean(row.is_active),
     formVersion: Number(row.form_version || 1),
@@ -23,23 +26,41 @@ function mapProposal(row: Record<string, unknown>): ProposalPublic {
 
 export async function getPublicProposal(
   slug: string,
+): Promise<ProposalPublic | null> {
+  if (isDemoMode() && slug === demoProposal.slug) return demoProposal;
+  if (!hasSupabaseConfig()) return null;
+  const { data } = await createServiceClient()
+    .from("proposals")
+    .select(
+      "id,slug,demo_url,is_active,form_version,businesses(name,business_type)",
+    )
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .neq("stage", "archived")
+    .maybeSingle();
+  return data ? mapProposal(data as unknown as Record<string, unknown>) : null;
+}
+
+export async function getLegacyPublicProposal(
+  slug: string,
   token: string,
 ): Promise<ProposalPublic | null> {
   if (
-    (!hasSupabaseConfig() || isDemoMode()) &&
+    isDemoMode() &&
     slug === demoProposal.slug &&
-    token === demoProposal.token
+    token === demoProposalToken
   )
     return demoProposal;
   if (!hasSupabaseConfig()) return null;
   const { data } = await createServiceClient()
     .from("proposals")
     .select(
-      "id,slug,public_token,demo_url,is_active,form_version,businesses(name,business_type)",
+      "id,slug,demo_url,is_active,form_version,businesses(name,business_type)",
     )
     .eq("slug", slug)
     .eq("public_token", token)
     .eq("is_active", true)
+    .neq("stage", "archived")
     .maybeSingle();
   return data ? mapProposal(data as unknown as Record<string, unknown>) : null;
 }
@@ -66,7 +87,6 @@ export async function listAdminProposals(): Promise<AdminProposal[]> {
     businessName: row.business_name || "Borrador sin nombre",
     businessType: row.business_type || "Tipo pendiente",
     slug: row.slug || "",
-    token: row.public_token,
     demoUrl: row.demo_url || "",
     active: row.is_active,
     formVersion: row.form_version,
@@ -185,7 +205,6 @@ export async function searchAdminProposals(filters: ProposalFilters) {
     businessName: row.business_name || "Borrador sin nombre",
     businessType: row.business_type || "Tipo pendiente",
     slug: row.slug || "",
-    token: row.public_token,
     demoUrl: row.demo_url || "",
     active: row.is_active,
     formVersion: row.form_version,

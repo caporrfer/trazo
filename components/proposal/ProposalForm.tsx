@@ -10,8 +10,9 @@ import {
   RotateCcw,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Brand } from "@/components/Brand";
 import {
   changeOptions,
   finalButtonLabel,
@@ -25,6 +26,11 @@ import {
   type StepId,
 } from "@/lib/flow";
 import type { FormAnswers, ProposalPublic } from "@/lib/types";
+import {
+  proposalConfirmationPath,
+  proposalPath,
+  proposalSubmissionPath,
+} from "@/lib/proposal-url";
 import { validateStep } from "@/lib/validation";
 import styles from "./ProposalForm.module.css";
 
@@ -110,7 +116,6 @@ export function ProposalForm({
   proposal: ProposalPublic;
   preview?: boolean;
 }) {
-  const params = useParams<{ slug: string; token: string }>();
   const router = useRouter();
   const storageKey = `trazo:draft:${proposal.id}:${proposal.formVersion}`;
   const [answers, setAnswers] = useState<FormAnswers>(emptyAnswers);
@@ -256,7 +261,7 @@ export function ProposalForm({
 
   async function copyShare(kind: "form" | "demo" | "both") {
     const formUrl = preview
-      ? `${window.location.origin}/propuesta/${proposal.slug}/${proposal.token}`
+      ? `${window.location.origin}${proposalPath(proposal.slug)}`
       : window.location.href;
     const text =
       kind === "form"
@@ -293,7 +298,7 @@ export function ProposalForm({
     setError(null);
     try {
       const response = await fetch(
-        `/api/propuestas/${encodeURIComponent(params.slug)}/${encodeURIComponent(params.token)}/respuestas`,
+        proposalSubmissionPath(proposal.slug),
         {
           method: "POST",
           headers: { "content-type": "application/json" },
@@ -319,7 +324,7 @@ export function ProposalForm({
           contactMethod: answers.contactMethod,
         }),
       );
-      router.push(`/propuesta/${params.slug}/${params.token}/gracias`);
+      router.push(proposalConfirmationPath(proposal.slug));
     } catch (reason) {
       setError(
         reason instanceof Error
@@ -846,39 +851,27 @@ export function ProposalForm({
   return (
     <main id="contenido" className={styles.page}>
       <header className={styles.masthead}>
-        <Link className="brand" href="/">
-          <span className="brand-mark" aria-hidden="true">
-            t
-          </span>
-          Trazo
-        </Link>
-        <div className={styles.secureNote}>
-          <LockKeyhole size={17} aria-hidden="true" />
-          <span>
-            {preview ? "Vista previa privada" : "Enlace de propuesta"}
-          </span>
+        <Brand href="/" compact />
+        <div className={styles.proposalIdentity}>
+          <strong>{proposal.businessName}</strong>
+          <a href={proposal.demoUrl} target="_blank" rel="noreferrer">
+            Ver la propuesta web
+            <ExternalLink size={16} aria-hidden="true" />
+            <span className="sr-only"> (se abre en otra pestaña)</span>
+          </a>
         </div>
+        {preview && (
+          <div className={styles.secureNote}>
+            <LockKeyhole size={17} aria-hidden="true" />
+            <span>Vista previa privada</span>
+          </div>
+        )}
       </header>
       <div className={styles.shell}>
         <div className={styles.formColumn}>
-          <section className={styles.intro}>
-            <p className="eyebrow">Una propuesta preparada para vosotros</p>
-            <h1>Propuesta web para {proposal.businessName}</h1>
-            <p>
-              Hemos preparado un primer borrador para vuestro negocio. Después
-              de verlo, cuéntanos qué te parece y cómo te gustaría continuar. No
-              supone ningún compromiso.
-            </p>
-            <a
-              className={`button button-secondary ${styles.demoLink}`}
-              href={proposal.demoUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Ver la propuesta web <ExternalLink size={20} aria-hidden="true" />
-              <span className="sr-only"> (se abre en otra pestaña)</span>
-            </a>
-          </section>
+          <h1 className="sr-only">
+            Propuesta web para {proposal.businessName}
+          </h1>
           <ol className={styles.progress} aria-label="Progreso">
             <li
               className={
@@ -973,18 +966,6 @@ export function ProposalForm({
             </button>
           </div>
         </div>
-        <aside className={styles.sidebar}>
-          <h2>Fácil y sin compromiso</h2>
-          <p>
-            Responde solo lo que corresponda. Podrás revisar todo antes de
-            enviarlo.
-          </p>
-          <ul>
-            <li>Sin registro ni contraseña</li>
-            <li>No realizas ningún pago</li>
-            <li>Puedes volver atrás</li>
-          </ul>
-        </aside>
       </div>
     </main>
   );

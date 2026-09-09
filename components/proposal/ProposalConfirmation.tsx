@@ -2,10 +2,16 @@
 
 import { Check, Copy, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Brand } from "@/components/Brand";
 import { confirmationCopy, optionLabels } from "@/lib/content";
+import { proposalPath } from "@/lib/proposal-url";
 import type { ContactMethod, Intent, ProposalPublic } from "@/lib/types";
 
-export function Confirmation({ proposal }: { proposal: ProposalPublic }) {
+export function ProposalConfirmation({
+  proposal,
+}: {
+  proposal: ProposalPublic;
+}) {
   const [details, setDetails] = useState<{
     intent?: Intent;
     contactMethod?: ContactMethod;
@@ -22,12 +28,7 @@ export function Confirmation({ proposal }: { proposal: ProposalPublic }) {
   return (
     <main id="contenido" className="home-shell">
       <div className="home-card">
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true">
-            <Check />
-          </span>
-          Trazo
-        </div>
+        <Brand />
         <p className="eyebrow">Respuesta recibida</p>
         <h1>Gracias por contarnos qué piensas, {proposal.businessName}.</h1>
         <p className="lead">{confirmationCopy(details.intent, contact)}</p>
@@ -52,13 +53,13 @@ export function Confirmation({ proposal }: { proposal: ProposalPublic }) {
             type="button"
             onClick={async () => {
               await navigator.clipboard.writeText(
-                location.href.replace(/\/gracias$/, ""),
+                `${location.origin}${proposalPath(proposal.slug)}`,
               );
               setCopied(true);
             }}
           >
             {copied ? "Enlace copiado" : "Copiar enlace"}{" "}
-            <Copy size={20} aria-hidden="true" />
+            {copied ? <Check size={20} aria-hidden="true" /> : <Copy size={20} aria-hidden="true" />}
           </button>
         </div>
       </div>

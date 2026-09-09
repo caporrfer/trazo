@@ -1,11 +1,12 @@
 import type { AdminProposal, AdminResponse, ProposalPublic } from "./types";
 
+export const demoProposalToken = "demo-seguro-trazo-2026";
+
 export const demoProposal: ProposalPublic = {
   id: "11111111-1111-4111-8111-111111111111",
   businessName: "Restaurante Paco",
   businessType: "Restaurante",
   slug: "restaurante-paco",
-  token: "demo-seguro-trazo-2026",
   demoUrl: "https://example.com",
   active: true,
   formVersion: 1,
@@ -27,7 +28,6 @@ export const demoAdminProposals: AdminProposal[] = [
     id: "22222222-2222-4222-8222-222222222222",
     businessName: "Café Nube",
     slug: "cafe-nube",
-    token: "demo-cafe-nube-2026",
     stage: "prepared",
     commercialStatus: "unclassified",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),

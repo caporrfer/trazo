@@ -1,5 +1,7 @@
 "use client";
 
+import { Brand } from "@/components/Brand";
+
 export default function GlobalError({
   reset,
 }: {
@@ -9,12 +11,7 @@ export default function GlobalError({
   return (
     <main id="contenido" className="home-shell">
       <div className="home-card">
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true">
-            t
-          </span>
-          Trazo
-        </div>
+        <Brand />
         <h1>No hemos podido cargar esta página</h1>
         <p className="lead">
           Puede ser un fallo temporal. Tu borrador local no se ha eliminado.

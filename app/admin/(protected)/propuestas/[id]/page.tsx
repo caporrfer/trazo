@@ -13,6 +13,7 @@ import {
   listAdminNotes,
   listAdminResponses,
 } from "@/lib/repository";
+import { proposalUrl } from "@/lib/proposal-url";
 import styles from "@/components/admin/Admin.module.css";
 import { CopyButton } from "@/components/admin/CopyButton";
 import {
@@ -40,9 +41,7 @@ export default async function ProposalDetailPage({
     (item) => item.proposalId === proposal.id,
   );
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const publicUrl = proposal.slug
-    ? `${appUrl}/propuesta/${proposal.slug}/${proposal.token}`
-    : "";
+  const publicUrl = proposal.slug ? proposalUrl(appUrl, proposal.slug) : "";
   const proposalComplete = Boolean(
     proposal.slug &&
       proposal.demoUrl &&
@@ -66,7 +65,7 @@ export default async function ProposalDetailPage({
         <span className={styles.tag}>{stageLabels[proposal.stage]}</span>
       </div>
       <div className={styles.detailGrid}>
-        <div>
+        <div className={styles.detailMain}>
           <section className={styles.panel}>
             <h2>Datos de la propuesta</h2>
             <form action={updateProposalDetails}>
@@ -328,7 +327,7 @@ export default async function ProposalDetailPage({
           </section>
         </div>
         <aside>
-          <section className={styles.panel}>
+          <section className={`${styles.panel} ${styles.linksPanel}`}>
             <h2>Enlaces</h2>
             {!proposalComplete && (
               <p className="notice">

@@ -1,0 +1,64 @@
+.hero {
+  min-height: calc(100svh - 90px);
+  display: grid;
+  place-items: center;
+  position: relative;
+  isolation: isolate;
+  padding: clamp(2rem, 6vw, 5rem) 1rem;
+  overflow: hidden;
+  background: var(--paper) url("/trazo-hero.webp") center / cover no-repeat;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    circle at center,
+    rgba(248, 246, 240, 0.98) 0,
+    rgba(248, 246, 240, 0.88) 22%,
+    rgba(248, 246, 240, 0.18) 58%,
+    transparent 76%
+  );
+}
+
+.content {
+  width: min(760px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 1.35rem;
+  text-align: center;
+  padding: clamp(2rem, 6vw, 4.5rem);
+}
+
+.content h1 {
+  max-width: 13ch;
+  margin: 0;
+  color: var(--green-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.3rem, 7vw, 5.25rem);
+  font-weight: 500;
+  line-height: 0.98;
+}
+
+.accent {
+  width: 4.5rem;
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+  margin: 0;
+  background: var(--coral);
+}
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: calc(100svh - 130px);
+    background-image: url("/trazo-hero-mobile.webp");
+  }
+
+  .content {
+    gap: 1rem;
+    padding-inline: 0.75rem;
+  }
+}

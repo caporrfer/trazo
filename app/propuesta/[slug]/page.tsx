@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string; token: string }>;
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug, token } = await params;
-  const proposal = await getPublicProposal(slug, token);
+  const { slug } = await params;
+  const proposal = await getPublicProposal(slug);
   return {
     title: proposal
       ? `Propuesta para ${proposal.businessName}`
@@ -23,10 +23,10 @@ export async function generateMetadata({
 export default async function ProposalPage({
   params,
 }: {
-  params: Promise<{ slug: string; token: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug, token } = await params;
-  const proposal = await getPublicProposal(slug, token);
+  const { slug } = await params;
+  const proposal = await getPublicProposal(slug);
   if (!proposal) notFound();
   return <ProposalForm proposal={proposal} />;
 }

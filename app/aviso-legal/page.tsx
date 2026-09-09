@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Brand } from "@/components/Brand";
 
 export const metadata = { title: "Aviso legal" };
 export const dynamic = "force-dynamic";
@@ -6,12 +6,7 @@ export const dynamic = "force-dynamic";
 export default function LegalPage() {
   return (
     <main id="contenido" className="prose-shell">
-      <Link className="brand" href="/">
-        <span className="brand-mark" aria-hidden="true">
-          t
-        </span>
-        Trazo
-      </Link>
+      <Brand href="/" />
       <h1>Aviso legal</h1>
       {!process.env.TRAZO_LEGAL_NAME && (
         <p className="legal-placeholder">

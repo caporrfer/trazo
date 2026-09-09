@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Brand } from "@/components/Brand";
 import { getAdmin } from "@/lib/auth";
 import { hasSupabaseConfig, isDemoMode } from "@/lib/supabase/config";
 import { LoginButton } from "./LoginButton";
@@ -15,12 +16,7 @@ export default async function LoginPage() {
   return (
     <main id="contenido" className="home-shell">
       <div className="home-card">
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true">
-            t
-          </span>
-          Trazo
-        </div>
+        <Brand />
         <p className="eyebrow">Administración privada</p>
         <h1>Accede al panel de propuestas</h1>
         <p className="lead">

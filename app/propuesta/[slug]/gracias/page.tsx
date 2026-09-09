@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
+import { ProposalConfirmation } from "@/components/proposal/ProposalConfirmation";
 import { getPublicProposal } from "@/lib/repository";
-import { Confirmation } from "./Confirmation";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -11,10 +11,10 @@ export const metadata = {
 export default async function ConfirmationPage({
   params,
 }: {
-  params: Promise<{ slug: string; token: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug, token } = await params;
-  const proposal = await getPublicProposal(slug, token);
+  const { slug } = await params;
+  const proposal = await getPublicProposal(slug);
   if (!proposal) notFound();
-  return <Confirmation proposal={proposal} />;
+  return <ProposalConfirmation proposal={proposal} />;
 }

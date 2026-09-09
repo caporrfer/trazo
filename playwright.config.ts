@@ -10,5 +10,14 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["iPhone 13"] } },
   ],
-  webServer: { command: "TRAZO_DEMO_MODE=true NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100 npm run dev -- --port 3100", url: "http://127.0.0.1:3100", reuseExistingServer: true, timeout: 120_000 },
+  webServer: {
+    command: "npm run dev -- --port 3100",
+    env: {
+      TRAZO_DEMO_MODE: "true",
+      NEXT_PUBLIC_APP_URL: "http://127.0.0.1:3100",
+    },
+    url: "http://127.0.0.1:3100",
+    reuseExistingServer: true,
+    timeout: 120_000,
+  },
 });

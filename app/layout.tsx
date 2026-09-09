@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { Brand } from "@/components/Brand";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: { default: "Trazo", template: "%s · Trazo" },
   description:
-    "Valora tu propuesta web personalizada y dinos cómo te gustaría continuar.",
+    "Creación de páginas web cuidadas y hechas a medida para cada negocio.",
 };
 
 export const viewport: Viewport = {
@@ -26,16 +27,7 @@ export default function RootLayout({
         {children}
         <footer className="site-footer">
           <div className="footer-inner">
-            <Link
-              className="brand brand-small"
-              href="/"
-              aria-label="Trazo, inicio"
-            >
-              <span className="brand-mark" aria-hidden="true">
-                t
-              </span>
-              Trazo
-            </Link>
+            <Brand href="/" compact />
             <nav aria-label="Información legal">
               <Link href="/privacidad">Privacidad</Link>
               <Link href="/aviso-legal">Aviso legal</Link>

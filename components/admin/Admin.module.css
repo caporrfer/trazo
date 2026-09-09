@@ -66,6 +66,11 @@
   background: white;
   color: var(--green);
 }
+.nav a.navActive {
+  background: white;
+  color: var(--green);
+  box-shadow: 0 1px 0 rgba(23, 76, 59, 0.08);
+}
 .main h1 {
   font-size: clamp(2rem, 5vw, 3rem);
   margin: 0 0 0.4rem;
@@ -88,6 +93,10 @@
   margin: 1.5rem 0;
 }
 .stat {
+  min-height: 104px;
+  display: grid;
+  place-content: center;
+  text-align: center;
   background: white;
   border: 1px solid #dce1dc;
   border-radius: 14px;
@@ -139,6 +148,7 @@
   display: block;
 }
 .row small {
+  display: block;
   color: var(--muted);
 }
 .tag {
@@ -155,11 +165,37 @@
   background: var(--coral-soft);
   color: #6d301d;
 }
-.filters {
+.filters,
+.filterForm {
   display: grid;
   grid-template-columns: 1.5fr repeat(3, 1fr);
   gap: 0.7rem;
   margin-bottom: 1rem;
+}
+.filterForm {
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 3fr);
+  align-items: end;
+}
+.filterPrimary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  align-items: end;
+}
+.filterDetails summary {
+  display: none;
+}
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 0.7rem;
+  align-items: end;
+}
+.filterGridWide {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+}
+.filterDetails:not([open]) .filterGrid {
+  display: grid;
 }
 .field {
   display: grid;
@@ -192,6 +228,13 @@
   display: grid;
   grid-template-columns: 1.5fr 0.8fr;
   gap: 1rem;
+}
+.detailMain {
+  min-width: 0;
+}
+.linksPanel small {
+  display: block;
+  overflow-wrap: anywhere;
 }
 .definition {
   display: grid;
@@ -249,9 +292,15 @@
   .nav {
     position: static;
     grid-template-columns: repeat(3, 1fr);
+    padding: 0.35rem;
+    background: #e7eae6;
+    border-radius: 13px;
   }
   .nav a {
     justify-content: center;
+    min-width: 0;
+    padding-inline: 0.45rem;
+    font-size: 0.9rem;
   }
   .stats {
     grid-template-columns: 1fr 1fr;
@@ -261,23 +310,128 @@
   }
   .row {
     grid-template-columns: 1fr auto;
+    gap: 0.4rem 0.75rem;
+    align-items: start;
+  }
+  .row > :first-child {
+    min-width: 0;
   }
   .row > :nth-child(2),
   .row > :nth-child(3) {
-    display: none;
+    grid-column: 1 / -1;
+  }
+  .row > :nth-child(4) {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+  }
+  .filterForm {
+    grid-template-columns: 1fr;
+  }
+  .filterGrid,
+  .filterGridWide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 560px) {
   .layout {
     width: min(100% - 1rem, 1280px);
   }
-  .nav a span {
-    display: none;
+  .header {
+    height: 64px;
   }
-  .stats,
+  .topline {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .topline :global(.button) {
+    width: 100%;
+  }
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+  .stat {
+    min-height: 96px;
+    padding: 0.75rem 0.45rem;
+  }
+  .stat strong {
+    font-size: 1.7rem;
+  }
+  .stat span {
+    line-height: 1.2;
+  }
   .grid2,
   .filters {
     grid-template-columns: 1fr;
+  }
+  .filterForm {
+    display: block;
+  }
+  .filterPrimary {
+    margin-bottom: 0.7rem;
+  }
+  .filterDetails {
+    border: 1px solid #dce1dc;
+    border-radius: 12px;
+    background: white;
+  }
+  .filterDetails summary {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.8rem;
+    color: var(--green);
+    font-weight: 750;
+    cursor: pointer;
+  }
+  .filterDetails summary::after {
+    content: "+";
+    font-size: 1.2rem;
+  }
+  .filterDetails[open] summary::after {
+    content: "−";
+  }
+  .filterGrid,
+  .filterGridWide {
+    grid-template-columns: 1fr;
+    padding: 0 0.8rem 0.8rem;
+  }
+  .filterDetails:not([open]) .filterGrid {
+    display: none;
+  }
+  .filterGrid :global(.button) {
+    width: 100%;
+  }
+  .panel {
+    padding: 0.9rem;
+  }
+  .row {
+    padding: 0.75rem;
+  }
+  .detailGrid {
+    display: flex;
+    flex-direction: column;
+  }
+  .detailMain,
+  .detailGrid > aside {
+    display: contents;
+  }
+  .linksPanel {
+    order: -1;
+  }
+  .actions :global(.button) {
+    flex: 1 1 145px;
+  }
+  .pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .pagination span {
+    flex-basis: 100%;
+    margin-right: 0;
+    text-align: center;
   }
   .definition {
     grid-template-columns: 1fr;

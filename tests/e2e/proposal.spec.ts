@@ -1,7 +1,55 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const url = "/propuesta/restaurante-paco/demo-seguro-trazo-2026";
+const url = "/propuesta/restaurante-paco";
+const legacyUrl = `${url}/demo-seguro-trazo-2026`;
+
+test("la portada presenta la nueva identidad", async ({ page }) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "Creación de páginas web" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Trazo, inicio").first()).toBeVisible();
+  await expect(page.getByText(/Tu propuesta empieza/)).toHaveCount(0);
+});
+
+test("la propuesta abre directamente en la primera pregunta", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(url);
+  await expect(
+    page.getByRole("heading", { name: "¿Has podido ver el borrador?" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Una propuesta preparada para vosotros"),
+  ).toHaveCount(0);
+  const question = await page
+    .getByRole("heading", { name: "¿Has podido ver el borrador?" })
+    .boundingBox();
+  expect(question?.y).toBeLessThan(430);
+});
+
+test("los enlaces antiguos redirigen y los inválidos no", async ({
+  request,
+}) => {
+  const proposal = await request.get(legacyUrl, { maxRedirects: 0 });
+  expect(proposal.status()).toBe(308);
+  expect(new URL(proposal.headers().location).pathname).toBe(url);
+
+  const confirmation = await request.get(`${legacyUrl}/gracias`, {
+    maxRedirects: 0,
+  });
+  expect(confirmation.status()).toBe(308);
+  expect(new URL(confirmation.headers().location).pathname).toBe(
+    `${url}/gracias`,
+  );
+
+  const invalid = await request.get(`${url}/token-invalido`, {
+    maxRedirects: 0,
+  });
+  expect(invalid.status()).toBe(404);
+});
 
 test("envía una opinión sin datos personales", async ({ page }) => {
   await page.goto(url);
@@ -120,6 +168,30 @@ test("el dashboard local y la vista previa privada están operativos", async ({
   ).toBeVisible();
 });
 
+test("el resumen móvil conserva dos indicadores por fila y la información", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/admin");
+  const indicators = page.locator('section[aria-label="Indicadores"] > div');
+  const first = await indicators.nth(0).boundingBox();
+  const second = await indicators.nth(1).boundingBox();
+  const third = await indicators.nth(2).boundingBox();
+  expect(Math.abs((first?.y || 0) - (second?.y || 0))).toBeLessThan(3);
+  expect(third?.y).toBeGreaterThan((first?.y || 0) + 40);
+  await expect(page.getByRole("link", { name: "Propuestas" })).toBeVisible();
+  await expect(page.getByText("Próximo contacto")).toBeVisible();
+});
+
+test("los filtros avanzados se despliegan en móvil", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/admin/respuestas");
+  const intent = page.getByRole("combobox", { name: "Intención" });
+  await expect(intent).not.toBeVisible();
+  await page.getByText("Más filtros", { exact: true }).click();
+  await expect(intent).toBeVisible();
+});
+
 test("el recorrido comercial completo mantiene la accesibilidad automática", async ({
   page,
 }) => {
@@ -170,7 +242,7 @@ test("reintentar el mismo envío no crea una segunda respuesta", async ({
     },
   };
   const first = await request.post(
-    `/api/propuestas/restaurante-paco/demo-seguro-trazo-2026/respuestas`,
+    "/api/propuestas/restaurante-paco/respuestas",
     { data: body },
   );
   const second = await request.post(

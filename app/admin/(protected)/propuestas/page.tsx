@@ -3,6 +3,7 @@ import { searchAdminProposals } from "@/lib/repository";
 import { commercialLabels, formatDate, stageLabels } from "@/lib/admin-content";
 import styles from "@/components/admin/Admin.module.css";
 import { Pagination } from "@/components/admin/Pagination";
+import { ResponsiveFilters } from "@/components/admin/ResponsiveFilters";
 
 export default async function ProposalsPage({
   searchParams,
@@ -15,6 +16,7 @@ export default async function ProposalsPage({
     page: Number(query.page || 1),
   });
   const proposals = result.items;
+  const hasAdvancedFilters = Boolean(query.stage || query.status);
   return (
     <>
       <div className={styles.topline}>
@@ -26,49 +28,61 @@ export default async function ProposalsPage({
           Nueva propuesta
         </Link>
       </div>
-      <form className={styles.filters}>
-        <label className={styles.field}>
-          <span className="sr-only">Buscar negocio</span>
-          <input
-            className={styles.input}
-            name="q"
-            defaultValue={query.q}
-            placeholder="Buscar negocio"
-          />
-        </label>
-        <label className={styles.field}>
-          <span className="sr-only">Preparación</span>
-          <select
-            className={styles.select}
-            name="stage"
-            defaultValue={query.stage}
-          >
-            <option value="">Todas las etapas</option>
-            {Object.entries(stageLabels).map(([id, text]) => (
-              <option value={id} key={id}>
-                {text}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          <span className="sr-only">Situación comercial</span>
-          <select
-            className={styles.select}
-            name="status"
-            defaultValue={query.status}
-          >
-            <option value="">Todas las situaciones</option>
-            {Object.entries(commercialLabels).map(([id, text]) => (
-              <option value={id} key={id}>
-                {text}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button className="button button-secondary" type="submit">
-          Filtrar
-        </button>
+      <form className={styles.filterForm}>
+        <div className={styles.filterPrimary}>
+          <label className={styles.field}>
+            <span className="sr-only">Buscar negocio</span>
+            <input
+              className={styles.input}
+              name="q"
+              defaultValue={query.q}
+              placeholder="Buscar negocio"
+            />
+          </label>
+          <button className="button button-secondary" type="submit">
+            Buscar
+          </button>
+        </div>
+        <ResponsiveFilters active={hasAdvancedFilters}>
+          <summary>
+            Más filtros{hasAdvancedFilters ? " · activos" : ""}
+          </summary>
+          <div className={styles.filterGrid}>
+            <label className={styles.field}>
+              <span className="sr-only">Preparación</span>
+              <select
+                className={styles.select}
+                name="stage"
+                defaultValue={query.stage}
+              >
+                <option value="">Todas las etapas</option>
+                {Object.entries(stageLabels).map(([id, text]) => (
+                  <option value={id} key={id}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={styles.field}>
+              <span className="sr-only">Situación comercial</span>
+              <select
+                className={styles.select}
+                name="status"
+                defaultValue={query.status}
+              >
+                <option value="">Todas las situaciones</option>
+                {Object.entries(commercialLabels).map(([id, text]) => (
+                  <option value={id} key={id}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button className="button button-secondary" type="submit">
+              Aplicar filtros
+            </button>
+          </div>
+        </ResponsiveFilters>
       </form>
       <section className={styles.panel}>
         <div className={styles.list}>
