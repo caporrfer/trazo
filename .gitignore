@@ -11,3 +11,4 @@ supabase/.temp/
 !.env.example
 .DS_Store
 *.tsbuildinfo
+.vercel/
