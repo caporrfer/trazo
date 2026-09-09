@@ -1,32 +1,48 @@
-import type { Metadata } from 'next';
-import { Bricolage_Grotesque, Manrope } from 'next/font/google';
-import './globals.css';
-
-const display = Bricolage_Grotesque({
-  variable: '--font-display',
-  subsets: ['latin'],
-  display: 'optional',
-  preload: false,
-});
-
-const body = Manrope({
-  variable: '--font-body',
-  subsets: ['latin'],
-  display: 'optional',
-  preload: false,
-});
+import type { Metadata, Viewport } from "next";
+import Link from "next/link";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'Trazo — Webs para negocios que quieren hacerse notar',
+  title: { default: "Trazo", template: "%s · Trazo" },
   description:
-    'Diseñamos, lanzamos y cuidamos la web de tu negocio para que tú puedas centrarte en hacerlo crecer.',
-  robots: { index: false, follow: false },
+    "Valora tu propuesta web personalizada y dinos cómo te gustaría continuar.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#174c3b",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
-      <body className={`${display.variable} ${body.variable}`}>{children}</body>
+    <html lang="es" data-scroll-behavior="smooth">
+      <body>
+        <a className="skip-link" href="#contenido">
+          Saltar al contenido
+        </a>
+        {children}
+        <footer className="site-footer">
+          <div className="footer-inner">
+            <Link
+              className="brand brand-small"
+              href="/"
+              aria-label="Trazo, inicio"
+            >
+              <span className="brand-mark" aria-hidden="true">
+                t
+              </span>
+              Trazo
+            </Link>
+            <nav aria-label="Información legal">
+              <Link href="/privacidad">Privacidad</Link>
+              <Link href="/aviso-legal">Aviso legal</Link>
+            </nav>
+          </div>
+        </footer>
+      </body>
     </html>
   );
 }
