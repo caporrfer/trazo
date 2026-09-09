@@ -311,20 +311,41 @@
   .masthead {
     width: min(100% - 1rem, 760px);
     padding-block: 0.65rem;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    align-items: center;
+    display: grid;
+    grid-template-columns: auto 1fr;
   }
   .proposalIdentity {
-    flex: 1 1 180px;
-    align-items: flex-end;
-    flex-direction: column;
-    gap: 0;
+    grid-column: 1 / -1;
+    width: 100%;
+    align-items: stretch;
+    display: grid;
+    gap: 0.55rem;
+    margin-left: 0;
+    padding-top: 0.45rem;
   }
   .proposalIdentity a {
-    min-height: 38px;
+    justify-content: center;
+    min-height: 56px;
+    padding: 0.75rem 1rem;
+    border-radius: 15px;
+    color: white;
+    background: var(--green);
+    font-size: 0.98rem;
+    text-decoration: none;
+    box-shadow: 0 8px 18px rgba(23, 76, 59, 0.14);
+  }
+  .proposalIdentity a:hover {
+    background: var(--green-dark);
   }
   .proposalIdentity strong {
-    max-width: 24ch;
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    color: var(--green-dark);
+    font-size: clamp(1.35rem, 6vw, 1.8rem);
+    line-height: 1.05;
   }
   .secureNote span {
     display: none;

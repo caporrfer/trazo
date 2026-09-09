@@ -254,6 +254,10 @@ h3 {
 .site-footer {
   padding: 1.3rem 1rem 2rem;
 }
+
+body:has(.landing-page) .site-footer {
+  display: none;
+}
 .footer-inner {
   width: min(1120px, 100%);
   margin: auto;

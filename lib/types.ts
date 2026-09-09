@@ -106,9 +106,6 @@ export interface AdminProposal extends ProposalPublic {
   nextContactAt?: string;
   responseCount: number;
   unreadCount: number;
-  knownContactName?: string;
-  knownContactEmail?: string;
-  knownContactPhone?: string;
 }
 
 export interface AdminResponse {

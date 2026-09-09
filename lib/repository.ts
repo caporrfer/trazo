@@ -97,9 +97,6 @@ export async function listAdminProposals(): Promise<AdminProposal[]> {
     nextContactAt: row.next_contact_at || undefined,
     responseCount: Number(row.response_count),
     unreadCount: Number(row.unread_count),
-    knownContactName: row.known_contact_name || undefined,
-    knownContactEmail: row.known_contact_email || undefined,
-    knownContactPhone: row.known_contact_phone || undefined,
   }));
 }
 
@@ -215,9 +212,6 @@ export async function searchAdminProposals(filters: ProposalFilters) {
     nextContactAt: row.next_contact_at || undefined,
     responseCount: Number(row.response_count),
     unreadCount: Number(row.unread_count),
-    knownContactName: row.known_contact_name || undefined,
-    knownContactEmail: row.known_contact_email || undefined,
-    knownContactPhone: row.known_contact_phone || undefined,
   })) as AdminProposal[];
   return { items: mapped, total: count || 0, ...bounds };
 }

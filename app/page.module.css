@@ -1,10 +1,10 @@
 .hero {
-  min-height: calc(100svh - 90px);
+  min-height: 100svh;
   display: grid;
-  place-items: center;
+  grid-template-rows: 1fr auto;
   position: relative;
   isolation: isolate;
-  padding: clamp(2rem, 6vw, 5rem) 1rem;
+  padding: clamp(2rem, 6vw, 5rem) 1rem 1.2rem;
   overflow: hidden;
   background: var(--paper) url("/trazo-hero.webp") center / cover no-repeat;
 }
@@ -25,6 +25,8 @@
 
 .content {
   width: min(760px, 100%);
+  align-self: center;
+  justify-self: center;
   display: grid;
   justify-items: center;
   gap: 1.35rem;
@@ -51,14 +53,54 @@
   background: var(--coral);
 }
 
+.heroFooter {
+  width: min(760px, 100%);
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0.2rem 0;
+  border-top: 1px solid rgba(23, 76, 59, 0.2);
+  color: var(--green-dark);
+  font-size: 0.78rem;
+}
+
+.heroFooter nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.heroFooter a {
+  text-underline-offset: 0.2em;
+}
+
+.heroFooter a:hover {
+  color: var(--coral);
+}
+
 @media (max-width: 600px) {
   .hero {
-    min-height: calc(100svh - 130px);
+    min-height: 100svh;
     background-image: url("/trazo-hero-mobile.webp");
+    padding-bottom: 1rem;
   }
 
   .content {
     gap: 1rem;
     padding-inline: 0.75rem;
+  }
+
+  .heroFooter {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+  }
+
+  .heroFooter nav {
+    justify-content: flex-start;
   }
 }

@@ -255,6 +255,10 @@
   gap: 0.7rem;
   margin-top: 1rem;
 }
+
+.sendForm {
+  margin-top: 1.5rem;
+}
 .empty {
   text-align: center;
   padding: 3rem 1rem;

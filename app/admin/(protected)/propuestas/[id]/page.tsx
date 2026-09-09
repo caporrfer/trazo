@@ -112,56 +112,15 @@ export default async function ProposalDetailPage({
                 </span>
               </div>
               <div className={styles.field}>
-                <label htmlFor="demoUrl">URL HTTPS de la demo</label>
+                <label htmlFor="demoUrl">URL de la demo</label>
                 <input
                   className={styles.input}
                   id="demoUrl"
                   name="demoUrl"
-                  type="url"
+                  type="text"
+                  inputMode="url"
                   defaultValue={proposal.demoUrl}
                 />
-              </div>
-              <h3>Contacto interno conocido</h3>
-              <p className="muted">No se mostrará en el formulario público.</p>
-              <div className={styles.field}>
-                <label htmlFor="knownContactName">
-                  Nombre <span className="muted">(opcional)</span>
-                </label>
-                <input
-                  className={styles.input}
-                  id="knownContactName"
-                  name="knownContactName"
-                  maxLength={100}
-                  defaultValue={proposal.knownContactName}
-                />
-              </div>
-              <div className={styles.grid2}>
-                <div className={styles.field}>
-                  <label htmlFor="knownContactEmail">
-                    Correo <span className="muted">(opcional)</span>
-                  </label>
-                  <input
-                    className={styles.input}
-                    id="knownContactEmail"
-                    name="knownContactEmail"
-                    type="email"
-                    maxLength={180}
-                    defaultValue={proposal.knownContactEmail}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="knownContactPhone">
-                    Teléfono <span className="muted">(opcional)</span>
-                  </label>
-                  <input
-                    className={styles.input}
-                    id="knownContactPhone"
-                    name="knownContactPhone"
-                    type="tel"
-                    maxLength={30}
-                    defaultValue={proposal.knownContactPhone}
-                  />
-                </div>
               </div>
               <button className="button button-secondary" type="submit">
                 Actualizar datos
@@ -374,7 +333,7 @@ export default async function ProposalDetailPage({
                 </div>
               </>
             )}
-            <form action={markProposalSent}>
+            <form className={styles.sendForm} action={markProposalSent}>
               <input type="hidden" name="id" value={proposal.id} />
               <button
                 className="button button-primary"

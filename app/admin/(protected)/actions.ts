@@ -21,12 +21,26 @@ const optionalSlug = z.union([
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
     .max(80),
 ]);
+function normalizeDemoUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 const optionalDemoUrl = z.union([
   z.literal(""),
   z
     .string()
-    .url()
-    .refine((value) => value.startsWith("https://")),
+    .trim()
+    .max(2048)
+    .refine((value) => {
+      try {
+        const url = new URL(normalizeDemoUrl(value));
+        return url.protocol === "https:" && Boolean(url.hostname);
+      } catch {
+        return false;
+      }
+    }),
 ]);
 const proposalSchema = z.object({
   businessName: optionalName,
@@ -55,21 +69,7 @@ const proposalUpdateSchema = z.object({
   ]),
   nextContactAt: localDateTimeSchema,
 });
-const proposalDetailsSchema = proposalSchema.extend({
-  id: uuidSchema,
-  knownContactName: z.string().trim().max(100),
-  knownContactEmail: z.union([
-    z.literal(""),
-    z.string().trim().email().max(180),
-  ]),
-  knownContactPhone: z.union([
-    z.literal(""),
-    z
-      .string()
-      .trim()
-      .regex(/^[+()\d\s.-]{6,30}$/),
-  ]),
-});
+const proposalDetailsSchema = proposalSchema.extend({ id: uuidSchema });
 const noteSchema = z.object({
   proposalId: uuidSchema,
   responseId: optionalUuidSchema,
@@ -131,7 +131,7 @@ export async function createProposal(formData: FormData) {
     p_business_type: input.data.businessType,
     p_slug: input.data.slug,
     p_public_token: randomBytes(18).toString("base64url"),
-    p_demo_url: input.data.demoUrl,
+    p_demo_url: normalizeDemoUrl(input.data.demoUrl),
   });
   if (error) redirect("/admin/propuestas/nueva?error=save");
   redirect(`/admin/propuestas/${proposalId}`);
@@ -149,10 +149,12 @@ export async function updateProposalDetails(formData: FormData) {
       p_business_name: input.data.businessName,
       p_business_type: input.data.businessType,
       p_slug: input.data.slug,
-      p_demo_url: input.data.demoUrl,
-      p_known_contact_name: input.data.knownContactName,
-      p_known_contact_email: input.data.knownContactEmail,
-      p_known_contact_phone: input.data.knownContactPhone,
+      p_demo_url: normalizeDemoUrl(input.data.demoUrl),
+      // La función SQL mantiene estos argumentos por compatibilidad, pero la
+      // aplicación ya no recopila ni muestra datos de contacto interno.
+      p_known_contact_name: "",
+      p_known_contact_email: "",
+      p_known_contact_phone: "",
     });
     if (error)
       throw new Error(

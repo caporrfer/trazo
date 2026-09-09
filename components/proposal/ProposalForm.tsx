@@ -221,12 +221,17 @@ export function ProposalForm({
   }, [update]);
 
   function next() {
-    const message = validateStep(current, answers);
+    const effectiveAnswers =
+      current === "pricing" && !answers.plan
+        ? { ...answers, plan: "updates" as const }
+        : answers;
+    if (effectiveAnswers !== answers) update({ plan: "updates" });
+    const message = validateStep(current, effectiveAnswers);
     if (message) {
       setError(message);
       return;
     }
-    const freshSteps = buildSteps(answers);
+    const freshSteps = buildSteps(effectiveAnswers);
     if (editingFromReview && freshSteps.includes("review")) {
       setHistory((items) => [...items, current]);
       setCurrent("review");
@@ -512,6 +517,7 @@ export function ProposalForm({
             <div className={styles.priceGrid}>
               {plans.map((plan) => {
                 const recommended = "recommended" in plan && plan.recommended;
+                const selectedPlan = answers.plan || "updates";
                 return (
                   <article
                     className={`${styles.priceCard} ${recommended ? styles.recommended : ""}`}
@@ -542,7 +548,7 @@ export function ProposalForm({
                         name="plan"
                         value={plan.id}
                         aria-label={`Me interesa ${plan.name}`}
-                        checked={answers.plan === plan.id}
+                        checked={selectedPlan === plan.id}
                         onChange={() =>
                           update({ plan: plan.id as FormAnswers["plan"] })
                         }

@@ -23,7 +23,7 @@ export default async function NewProposalPage({
       {error && (
         <p className="notice error-notice" role="alert">
           {error === "invalid"
-            ? "Revisa los campos. El slug usa minúsculas, números y guiones; la demo debe tener HTTPS."
+            ? "Revisa los campos. El slug usa minúsculas, números y guiones; indica una URL de demo válida."
             : "No hemos podido guardar la propuesta."}
         </p>
       )}
@@ -80,8 +80,9 @@ export default async function NewProposalPage({
             className={styles.input}
             id="demoUrl"
             name="demoUrl"
-            type="url"
-            placeholder="https://demo-restaurante-paco.vercel.app"
+            type="text"
+            inputMode="url"
+            placeholder="demo-restaurante-paco.vercel.app"
           />
         </div>
         <button className="button button-primary" type="submit">

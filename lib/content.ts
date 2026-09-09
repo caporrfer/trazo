@@ -100,22 +100,6 @@ export const changeOptions = [
 
 export const plans = [
   {
-    id: "hosting",
-    name: "Web + alojamiento",
-    price: "300 € + 29 €/mes",
-    description:
-      "Nosotros alojamos la web y nos ocupamos de que permanezca online y funcionando.",
-    items: [
-      "Diseño personalizado",
-      "Adaptación a móvil",
-      "Puesta en marcha",
-      "Dominio .es incluido",
-      "Alojamiento incluido",
-      "Soporte técnico",
-      "Sin permanencia",
-    ],
-  },
-  {
     id: "updates",
     name: "Web + actualizaciones",
     price: "300 € + 39 €/mes",
@@ -128,6 +112,22 @@ export const plans = [
       "Actualización de carta y precios",
       "Actualización de horarios",
       "Actualización continua del contenido",
+      "Sin permanencia",
+    ],
+  },
+  {
+    id: "hosting",
+    name: "Web + alojamiento",
+    price: "300 € + 29 €/mes",
+    description:
+      "Nosotros alojamos la web y nos ocupamos de que permanezca online y funcionando.",
+    items: [
+      "Diseño personalizado",
+      "Adaptación a móvil",
+      "Puesta en marcha",
+      "Dominio .es incluido",
+      "Alojamiento incluido",
+      "Soporte técnico",
       "Sin permanencia",
     ],
   },
@@ -149,7 +149,7 @@ export const plans = [
 ] as const;
 
 export function finalButtonLabel(answers: FormAnswers) {
-  if (answers.intent === "changes") return "Solicitar cambios";
+  if (answers.intent === "changes") return "Enviar";
   if (answers.intent === "demo_help") return "Solicitar ayuda";
   if (answers.intent === "information") return "Solicitar información";
   if (answers.intent === "talk" && answers.contactMethod === "phone")

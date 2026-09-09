@@ -10,6 +10,8 @@ test("la portada presenta la nueva identidad", async ({ page }) => {
     page.getByRole("heading", { name: "Creación de páginas web" }),
   ).toBeVisible();
   await expect(page.getByLabel("Trazo, inicio").first()).toBeVisible();
+  await expect(page.locator(".landing-page footer")).toBeVisible();
+  await expect(page.locator("body > .site-footer")).toBeHidden();
   await expect(page.getByText(/Tu propuesta empieza/)).toHaveCount(0);
 });
 
@@ -24,6 +26,10 @@ test("la propuesta abre directamente en la primera pregunta", async ({
   await expect(
     page.getByText("Una propuesta preparada para vosotros"),
   ).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Ver la propuesta web" }),
+  ).toBeVisible();
+  await expect(page.getByText("Restaurante Paco", { exact: true })).toBeVisible();
   const question = await page
     .getByRole("heading", { name: "¿Has podido ver el borrador?" })
     .boundingBox();
@@ -159,6 +165,12 @@ test("el dashboard local y la vista previa privada están operativos", async ({
   await expect(
     page.getByRole("heading", { name: "Restaurante Paco" }),
   ).toBeVisible();
+  await expect(page.getByText("Contacto interno conocido")).toHaveCount(0);
+  await page.goto("/admin/propuestas/nueva");
+  await expect(page.getByLabel("URL de la demo")).toHaveAttribute(
+    "type",
+    "text",
+  );
   await page.goto("/admin/vista-previa/11111111-1111-4111-8111-111111111111");
   await expect(
     page.getByText(/no se guardará ninguna respuesta/i),
@@ -207,6 +219,9 @@ test("el recorrido comercial completo mantiene la accesibilidad automática", as
   await page.getByRole("button", { name: /Continuar/ }).click();
   await page.getByLabel("No lo tengo claro; necesito asesoramiento").check();
   await page.getByRole("button", { name: /Continuar/ }).click();
+  await expect(
+    page.getByLabel(/Me interesa Web \+ actualizaciones/),
+  ).toBeChecked();
   await page.getByLabel(/Me interesa Web \+ actualizaciones/).check();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.getByRole("button", { name: /Continuar/ }).click();
