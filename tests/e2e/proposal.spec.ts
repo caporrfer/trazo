@@ -226,6 +226,57 @@ test("los filtros avanzados se despliegan en móvil", async ({ page }) => {
   await expect(intent).toBeVisible();
 });
 
+test("los filtros de fecha se apilan sin solaparse en móvil", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/admin/respuestas");
+  await page.getByText("Más filtros", { exact: true }).click();
+
+  const from = page.locator('input[name="from"]');
+  const to = page.locator('input[name="to"]');
+  await expect(from).toBeVisible();
+  await expect(to).toBeVisible();
+
+  const fromBox = await from.boundingBox();
+  const toBox = await to.boundingBox();
+  expect(fromBox).not.toBeNull();
+  expect(toBox).not.toBeNull();
+  expect(toBox!.y).toBeGreaterThanOrEqual(fromBox!.y + fromBox!.height);
+
+  const sizes = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    content: document.documentElement.scrollWidth,
+  }));
+  expect(sizes.content).toBeLessThanOrEqual(sizes.viewport);
+});
+
+test("los filtros avanzados se adaptan al ancho real del panel", async ({ page }) => {
+  await page.setViewportSize({ width: 1541, height: 900 });
+  await page.goto("/admin/respuestas");
+
+  const controls = page.locator("details input, details select, details button");
+  const boxes = await controls.evaluateAll((elements) =>
+    elements
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { x: rect.x, y: rect.y, right: rect.right, bottom: rect.bottom };
+      })
+      .filter((rect) => rect.right > rect.x && rect.bottom > rect.y),
+  );
+
+  for (let index = 0; index < boxes.length; index += 1) {
+    for (let next = index + 1; next < boxes.length; next += 1) {
+      const first = boxes[index];
+      const second = boxes[next];
+      const separated =
+        first.right <= second.x ||
+        second.right <= first.x ||
+        first.bottom <= second.y ||
+        second.bottom <= first.y;
+      expect(separated).toBe(true);
+    }
+  }
+});
+
 test("el recorrido comercial completo mantiene la accesibilidad automática", async ({
   page,
 }) => {

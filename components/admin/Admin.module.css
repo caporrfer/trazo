@@ -185,6 +185,14 @@
 .filterDetails summary {
   display: none;
 }
+.filterDetails,
+.filterGrid > *,
+.filterGrid .field {
+  min-width: 0;
+}
+.filterDetails {
+  container: filters / inline-size;
+}
 .filterGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
@@ -193,6 +201,10 @@
 }
 .filterGridWide {
   grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+}
+.filterGrid .input,
+.filterGrid .select {
+  min-width: 0;
 }
 .filterDetails:not([open]) .filterGrid {
   display: grid;
@@ -339,6 +351,24 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+@media (max-width: 1100px) and (min-width: 851px) {
+  .filterGridWide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .filterGridWide > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+@container filters (max-width: 850px) {
+  .filterGrid,
+  .filterGridWide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .filterGrid > :last-child,
+  .filterGridWide > :last-child {
+    grid-column: 1 / -1;
+  }
+}
 @media (max-width: 560px) {
   .layout {
     width: min(100% - 1rem, 1280px);
@@ -375,7 +405,11 @@
     display: block;
   }
   .filterPrimary {
+    grid-template-columns: 1fr;
     margin-bottom: 0.7rem;
+  }
+  .filterPrimary :global(.button) {
+    width: 100%;
   }
   .filterDetails {
     border: 1px solid #dce1dc;
@@ -403,6 +437,9 @@
   .filterGridWide {
     grid-template-columns: 1fr;
     padding: 0 0.8rem 0.8rem;
+  }
+  .filterGridWide > :last-child {
+    grid-column: auto;
   }
   .filterDetails:not([open]) .filterGrid {
     display: none;
