@@ -28,7 +28,7 @@ export default async function ProposalsPage({
           Nueva propuesta
         </Link>
       </div>
-      <form className={styles.filterForm}>
+      <form className={`${styles.filterForm} ${styles.proposalsFilterForm}`}>
         <div className={styles.filterPrimary}>
           <label className={styles.field}>
             <span className="sr-only">Buscar negocio</span>

@@ -284,6 +284,26 @@ test("los filtros avanzados se adaptan al ancho real del panel", async ({ page }
   }
 });
 
+test("los filtros de propuestas mantienen una cuadrícula equilibrada", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile");
+  await page.setViewportSize({ width: 1541, height: 900 });
+  await page.goto("/admin/propuestas?stage=draft");
+
+  const actionButtons = page.locator("form button");
+  const searchButton = await actionButtons.nth(0).boundingBox();
+  const applyButton = await actionButtons.nth(1).boundingBox();
+  expect(searchButton).not.toBeNull();
+  expect(applyButton).not.toBeNull();
+  expect(applyButton!.width).toBe(searchButton!.width);
+
+  const stage = await page.locator('select[name="stage"]').boundingBox();
+  const status = await page.locator('select[name="status"]').boundingBox();
+  expect(stage).not.toBeNull();
+  expect(status).not.toBeNull();
+  expect(status!.y).toBe(stage!.y);
+  expect(status!.width).toBe(stage!.width);
+});
+
 test("el recorrido comercial completo mantiene la accesibilidad automática", async ({
   page,
 }) => {
