@@ -193,6 +193,18 @@
 .filterDetails {
   container: filters / inline-size;
 }
+.responsesFilterForm {
+  display: block;
+}
+.responsesFilterForm .filterGridWide {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.responsesFilterForm .filterPrimary > button,
+.responsesFilterForm .filterGridWide > button {
+  width: 10rem;
+  min-width: 10rem;
+  justify-self: center;
+}
 .filterGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
@@ -368,6 +380,14 @@
   .filterGridWide > :last-child {
     grid-column: 1 / -1;
   }
+  .responsesFilterForm .filterGrid,
+  .responsesFilterForm .filterGridWide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .responsesFilterForm .filterGrid > :last-child,
+  .responsesFilterForm .filterGridWide > :last-child {
+    grid-column: 1 / -1;
+  }
 }
 @media (max-width: 560px) {
   .layout {
@@ -440,6 +460,17 @@
   }
   .filterGridWide > :last-child {
     grid-column: auto;
+  }
+  .responsesFilterForm .filterGridWide {
+    grid-template-columns: 1fr;
+  }
+  .responsesFilterForm .filterGridWide > :last-child {
+    grid-column: auto;
+  }
+  .responsesFilterForm .filterPrimary > button,
+  .responsesFilterForm .filterGridWide > button {
+    width: 100%;
+    min-width: 0;
   }
   .filterDetails:not([open]) .filterGrid {
     display: none;

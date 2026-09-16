@@ -48,7 +48,7 @@ export default async function ResponsesPage({
           La respuesta se ha eliminado.
         </p>
       )}
-      <form className={styles.filterForm}>
+      <form className={`${styles.filterForm} ${styles.responsesFilterForm}`}>
         <div className={styles.filterPrimary}>
           <label className={styles.field}>
             <span className="sr-only">Buscar negocio</span>

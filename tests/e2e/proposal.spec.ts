@@ -251,7 +251,14 @@ test("los filtros de fecha se apilan sin solaparse en móvil", async ({ page }) 
 
 test("los filtros avanzados se adaptan al ancho real del panel", async ({ page }) => {
   await page.setViewportSize({ width: 1541, height: 900 });
-  await page.goto("/admin/respuestas");
+  await page.goto("/admin/respuestas?intent=information");
+
+  const actionButtons = page.locator("form button");
+  const searchButton = await actionButtons.nth(0).boundingBox();
+  const applyButton = await actionButtons.nth(1).boundingBox();
+  expect(searchButton).not.toBeNull();
+  expect(applyButton).not.toBeNull();
+  expect(applyButton!.width).toBe(searchButton!.width);
 
   const controls = page.locator("details input, details select, details button");
   const boxes = await controls.evaluateAll((elements) =>
