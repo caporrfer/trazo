@@ -304,6 +304,53 @@ test("los filtros de propuestas mantienen una cuadrícula equilibrada", async ({
   expect(status!.width).toBe(stage!.width);
 });
 
+test("los filtros de dominios se ordenan y se adaptan en móvil", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/admin/dominios");
+
+  await expect(page.getByPlaceholder("Buscar negocio o dominio")).toBeVisible();
+  await expect(page.getByText("Más filtros", { exact: true })).toBeVisible();
+  await page.getByText("Más filtros", { exact: true }).click();
+
+  const pending = page.getByLabel("Meses pendientes");
+  const renewal = page.getByLabel("Renovaciones próximas");
+  await expect(pending).toBeVisible();
+  await expect(renewal).toBeVisible();
+  await expect(page.getByRole("button", { name: "Aplicar filtros" })).toBeVisible();
+
+  const pendingBox = await pending.boundingBox();
+  const renewalBox = await renewal.boundingBox();
+  expect(pendingBox).not.toBeNull();
+  expect(renewalBox).not.toBeNull();
+  expect(renewalBox!.y).toBeGreaterThanOrEqual(pendingBox!.y + pendingBox!.height);
+
+  const sizes = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    content: document.documentElement.scrollWidth,
+  }));
+  expect(sizes.content).toBeLessThanOrEqual(sizes.viewport);
+});
+
+test("los filtros de dominios mantienen botones y casillas equilibrados en escritorio", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile");
+  await page.setViewportSize({ width: 1541, height: 900 });
+  await page.goto("/admin/dominios");
+
+  const buttons = page.locator("form button");
+  const searchButton = await buttons.nth(0).boundingBox();
+  const applyButton = await buttons.nth(1).boundingBox();
+  expect(searchButton).not.toBeNull();
+  expect(applyButton).not.toBeNull();
+  expect(applyButton!.width).toBe(searchButton!.width);
+
+  const checkboxes = page.locator('input[type="checkbox"]');
+  const pending = await checkboxes.nth(0).boundingBox();
+  const renewal = await checkboxes.nth(1).boundingBox();
+  expect(pending).not.toBeNull();
+  expect(renewal).not.toBeNull();
+  expect(renewal!.y).toBe(pending!.y);
+});
+
 test("el recorrido comercial completo mantiene la accesibilidad automática", async ({
   page,
 }) => {
