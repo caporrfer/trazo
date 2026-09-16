@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, LayoutDashboard, MessageSquareText } from "lucide-react";
+import { FileText, Globe2, LayoutDashboard, MessageSquareText } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Admin.module.css";
@@ -9,6 +9,7 @@ const links = [
   { href: "/admin", label: "Resumen", icon: LayoutDashboard },
   { href: "/admin/propuestas", label: "Propuestas", icon: FileText },
   { href: "/admin/respuestas", label: "Respuestas", icon: MessageSquareText },
+  { href: "/admin/dominios", label: "Dominios", icon: Globe2 },
 ];
 
 export function AdminNav() {

@@ -295,7 +295,7 @@
   }
   .nav {
     position: static;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     padding: 0.35rem;
     background: #e7eae6;
     border-radius: 13px;
@@ -305,6 +305,8 @@
     min-width: 0;
     padding-inline: 0.45rem;
     font-size: 0.9rem;
+    flex-direction: column;
+    gap: 0.15rem;
   }
   .stats {
     grid-template-columns: 1fr 1fr;

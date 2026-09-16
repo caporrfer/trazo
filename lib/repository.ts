@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   demoAdminProposals,
   demoProposal,
@@ -5,6 +6,9 @@ import {
 } from "./demo-data";
 import { demoResponses } from "./demo-store";
 import type { AdminProposal, AdminResponse, ProposalPublic } from "./types";
+import type { ManagedWebsite, ManagedDomain, MaintenancePayment } from "./types";
+import { activeMetrics, daysToRenewal, renewalStatus } from "./domains";
+import { demoWebsites } from "./domain-store";
 import { hasSupabaseConfig, isDemoMode } from "./supabase/config";
 import { createServiceClient, createSessionClient } from "./supabase/server";
 
@@ -342,4 +346,52 @@ export async function listAdminFollowups(proposalId: string) {
     contactedAt: item.contacted_at,
     nextContactAt: item.next_contact_at || undefined,
   }));
+}
+
+function mapManagedWebsite(row: Record<string, any>): ManagedWebsite {
+  const domains: ManagedDomain[] = (row.managed_domains || []).map((domain: any) => {
+    const events = domain.domain_events || [];
+    const latest = [...events].sort((a, b) => String(b.event_date).localeCompare(String(a.event_date)))[0];
+    return {
+      id: domain.id, websiteId: domain.website_id, name: domain.name,
+      provider: domain.provider || undefined, contractedOn: domain.contracted_on || undefined,
+      nextRenewalOn: domain.next_renewal_on || undefined, autoRenew: Boolean(domain.auto_renew),
+      renewalStatus: renewalStatus(domain.next_renewal_on), daysToRenewal: daysToRenewal(domain.next_renewal_on),
+      lastCostCents: latest?.amount_cents || undefined,
+      events: events.map((event: any) => ({ id: event.id, eventType: event.event_type, eventDate: event.event_date, provider: event.provider || undefined, amountCents: event.amount_cents || undefined, notes: event.notes || undefined, fileId: event.file_path ? event.id : undefined, fileName: event.file_name || undefined })),
+    };
+  });
+  const payments: MaintenancePayment[] = (row.maintenance_payments || []).map((payment: any) => {
+    const first = [...(payment.maintenance_payment_periods || [])].sort((a, b) => String(a.period_start).localeCompare(String(b.period_start)))[0];
+    return { id: payment.id, paidOn: payment.paid_on, amountCents: payment.amount_cents, periodStart: first?.period_start || "", monthsCovered: (payment.maintenance_payment_periods || []).length, notes: payment.notes || undefined, voidedAt: payment.voided_at || undefined };
+  });
+  const website = { id: row.id, businessId: row.business_id || undefined, proposalId: row.proposal_id || undefined, businessName: row.businesses?.name || "Cliente sin nombre", websiteUrl: row.website_url || undefined, activatedOn: row.activated_on || undefined, deactivatedOn: row.deactivated_on || undefined, maintenanceMonthlyCents: row.maintenance_monthly_cents ?? undefined, notes: row.notes || undefined, archived: Boolean(row.archived), domainCount: domains.length, domains, payments, paidMonths: 0, pendingMonths: 0, totalPaidCents: 0 } satisfies ManagedWebsite;
+  const metrics = activeMetrics(website);
+  const paidMonths = payments.filter((payment) => !payment.voidedAt).reduce((sum, payment) => sum + payment.monthsCovered, 0);
+  return { ...website, ...metrics, paidMonths, pendingMonths: Math.max(0, (metrics.completeMonths || 0) - paidMonths), totalPaidCents: payments.filter((payment) => !payment.voidedAt).reduce((sum, payment) => sum + payment.amountCents, 0) };
+}
+
+export async function listAdminWebsites(filters: { q?: string; pending?: boolean; renewal?: boolean } = {}) {
+  if (isDemoMode() || !hasSupabaseConfig()) {
+    let items = demoWebsites().filter((item) => !item.archived);
+    if (filters.q) { const q = normalizeSearch(filters.q); items = items.filter((item) => normalizeSearch(item.businessName).includes(q) || item.domains.some((domain) => normalizeSearch(domain.name).includes(q))); }
+    if (filters.pending) items = items.filter((item) => item.pendingMonths > 0);
+    if (filters.renewal) items = items.filter((item) => item.domains.some((domain) => ["soon", "today", "overdue"].includes(domain.renewalStatus)));
+    return items;
+  }
+  let query = (await createSessionClient()).from("managed_websites").select("*, businesses(name), managed_domains(*, domain_events(*)), maintenance_payments(*, maintenance_payment_periods(*))").eq("archived", false).order("created_at", { ascending: false });
+  if (filters.q) query = query.ilike("businesses.name", `%${normalizeSearch(filters.q).replaceAll("%", "\\%").replaceAll("_", "\\_")}%`);
+  const { data, error } = await query;
+  if (error) throw error;
+  let items = (data || []).map((row) => mapManagedWebsite(row as Record<string, any>));
+  if (filters.pending) items = items.filter((item) => item.pendingMonths > 0);
+  if (filters.renewal) items = items.filter((item) => item.domains.some((domain) => ["soon", "today", "overdue"].includes(domain.renewalStatus)));
+  return items;
+}
+
+export async function getAdminWebsite(id: string) {
+  if (isDemoMode() || !hasSupabaseConfig()) return demoWebsites().find((item) => item.id === id) || null;
+  const { data, error } = await (await createSessionClient()).from("managed_websites").select("*, businesses(name), managed_domains(*, domain_events(*)), maintenance_payments(*, maintenance_payment_periods(*))").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data ? mapManagedWebsite(data as Record<string, any>) : null;
 }

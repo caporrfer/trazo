@@ -123,3 +123,60 @@ export interface AdminResponse {
   followupStatus: "none" | "pending" | "attended";
   answers: FormAnswers;
 }
+
+export interface ManagedDomain {
+  id: string;
+  websiteId: string;
+  name: string;
+  provider?: string;
+  contractedOn?: string;
+  nextRenewalOn?: string;
+  autoRenew: boolean;
+  renewalStatus: "active" | "soon" | "today" | "overdue" | "unknown";
+  daysToRenewal?: number;
+  lastCostCents?: number;
+  events?: DomainEvent[];
+}
+
+export interface DomainEvent {
+  id: string;
+  eventType: "purchase" | "renewal" | "other";
+  eventDate: string;
+  provider?: string;
+  amountCents?: number;
+  notes?: string;
+  fileId?: string;
+  fileName?: string;
+}
+
+export interface MaintenancePayment {
+  id: string;
+  paidOn: string;
+  amountCents: number;
+  periodStart: string;
+  monthsCovered: number;
+  notes?: string;
+  voidedAt?: string;
+}
+
+export interface ManagedWebsite {
+  id: string;
+  businessId?: string;
+  proposalId?: string;
+  businessName: string;
+  websiteUrl?: string;
+  activatedOn?: string;
+  deactivatedOn?: string;
+  maintenanceMonthlyCents?: number;
+  notes?: string;
+  archived: boolean;
+  domainCount: number;
+  domains: ManagedDomain[];
+  payments: MaintenancePayment[];
+  activeDays?: number;
+  completeMonths?: number;
+  remainingDays?: number;
+  paidMonths: number;
+  pendingMonths: number;
+  totalPaidCents: number;
+}

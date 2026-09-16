@@ -62,7 +62,7 @@ export default async function ProposalDetailPage({
             {proposal.businessType} · Creada {formatDate(proposal.createdAt)}
           </p>
         </div>
-        <span className={styles.tag}>{stageLabels[proposal.stage]}</span>
+        <div className={styles.actions}><span className={styles.tag}>{stageLabels[proposal.stage]}</span><Link className="button button-secondary" href={`/admin/dominios/nueva?proposal=${proposal.id}`}>Registrar web</Link></div>
       </div>
       <div className={styles.detailGrid}>
         <div className={styles.detailMain}>

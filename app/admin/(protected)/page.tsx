@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listAdminProposals, listAdminResponses } from "@/lib/repository";
+import { listAdminProposals, listAdminResponses, listAdminWebsites } from "@/lib/repository";
 import {
   commercialLabels,
   formatDate,
@@ -13,6 +13,9 @@ export default async function DashboardPage() {
     listAdminProposals(),
     listAdminResponses(),
   ]);
+  let websites = [] as Awaited<ReturnType<typeof listAdminWebsites>>;
+  let domainsUnavailable = false;
+  try { websites = await listAdminWebsites(); } catch (error) { console.error("No se han podido cargar los dominios", error); domainsUnavailable = true; }
   const pending = responses.filter(
     (item) => item.followupStatus === "pending",
   ).length;
@@ -47,6 +50,11 @@ export default async function DashboardPage() {
           <strong>{pending}</strong>
           <span>Pendientes de contacto</span>
         </div>
+      </section>
+      <section className={styles.panel}>
+        <h2>Dominios y mantenimiento</h2>
+        <p className="muted">{domainsUnavailable ? "La base de datos de dominios aún no está disponible." : `${websites.filter((website) => website.pendingMonths > 0).length} webs tienen meses pendientes y ${websites.filter((website) => website.domains.some((domain) => ["soon", "today", "overdue"].includes(domain.renewalStatus))).length} dominios requieren revisión.`}</p>
+        <div className={styles.actions}><Link className="button button-secondary" href="/admin/dominios">Ver dominios</Link></div>
       </section>
       <section className={styles.panel}>
         <h2>Respuestas recientes</h2>

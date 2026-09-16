@@ -58,3 +58,13 @@ export function formatDate(value: string) {
     timeZone: "Europe/Madrid",
   }).format(new Date(value));
 }
+
+export function formatCalendarDate(value?: string) {
+  if (!value) return "Sin indicar";
+  return new Intl.DateTimeFormat("es-ES", { dateStyle: "medium", timeZone: "Europe/Madrid" }).format(new Date(`${value}T12:00:00Z`));
+}
+
+export function formatEuroCents(value?: number) {
+  if (value === undefined || value === null) return "Sin indicar";
+  return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(value / 100);
+}

@@ -15,6 +15,16 @@ test("la portada presenta la nueva identidad", async ({ page }) => {
   await expect(page.getByText(/Tu propuesta empieza/)).toHaveCount(0);
 });
 
+test("el admin muestra la sección de dominios y la ficha de mantenimiento", async ({ page }) => {
+  await page.goto("/admin/dominios");
+  await expect(page.getByRole("heading", { name: "Dominios" })).toBeVisible();
+  await expect(page.getByText("Webs gestionadas")).toBeVisible();
+  await page.getByRole("link", { name: /Restaurante Paco/ }).click();
+  await expect(page.getByRole("heading", { name: "Restaurante Paco" })).toBeVisible();
+  await expect(page.getByText("Registrar cobro de mantenimiento")).toBeVisible();
+  await expect(page.getByText("Factura o renovación · restaurante-paco.es")).toBeVisible();
+});
+
 test("la propuesta abre directamente en la primera pregunta", async ({
   page,
 }) => {
