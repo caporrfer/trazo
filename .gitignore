@@ -4,7 +4,6 @@ out/
 coverage/
 playwright-report/
 test-results/
-supabase/.temp/
 .env
 .env.local
 .env.*.local
@@ -12,3 +11,4 @@ supabase/.temp/
 .DS_Store
 *.tsbuildinfo
 .vercel/
+supabase/.temp/

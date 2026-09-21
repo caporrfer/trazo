@@ -1,36 +1,26 @@
 # Puesta en producción y recuperación
 
+Trazo se ejecuta en el servidor propio con Docker Compose, PostgreSQL local y un volumen privado para facturas.
+
 ## Configuración inicial
 
-1. Crea proyectos Supabase separados para pruebas y producción en una región europea.
-2. Aplica `supabase/migrations` y configura Google OAuth con el callback exacto de cada entorno.
-3. Tras el primer acceso de la cuenta autorizada, inserta su UUID y correo en `public.admin_users` con la consulta incluida al final de la migración.
-4. Configura en Vercel todas las variables de `.env.example`. Las previsualizaciones deben usar exclusivamente Supabase de pruebas.
-5. Completa los datos legales y solicita una revisión jurídica de los textos antes de conectar el dominio público.
-6. Ejecuta lint, tipos, pruebas unitarias, Playwright y build. Aplica después la migración, despliega, realiza un envío de prueba y comprueba HTTPS.
+1. Copia `.env.example` a `.env`, completa los secretos y desactiva `TRAZO_DEMO_MODE`.
+2. Registra `https://DOMINIO/auth/callback` como callback de Google OAuth.
+3. Ejecuta `docker compose up -d --build` y comprueba HTTPS, el formulario y el dashboard.
+4. Completa los datos legales y solicita una revisión jurídica antes de conectar el dominio público.
 
 ## Copias
 
-Activa las copias gestionadas de Supabase y configura una exportación cifrada diaria fuera del proyecto de producción. La exportación debe incluir esquema, datos y un registro externo de las eliminaciones realizadas desde el último backup. Restringe las credenciales de copia a personal técnico autorizado.
-
-Objetivos iniciales: RPO de 24 horas y RTO de 4 horas. Cada trimestre restaura la copia más reciente en un proyecto aislado, ejecuta una consulta de integridad y recorre el formulario y el dashboard con datos de prueba.
+Exporta diariamente PostgreSQL con `pg_dump -Fc` y el volumen `data`. Guarda las copias fuera del servidor de producción con acceso restringido. Objetivos iniciales: RPO de 24 horas y RTO de 4 horas. Cada trimestre restaura una copia en un entorno aislado y ejecuta el recorrido de aceptación.
 
 ## Restauración
 
-1. Restaura siempre en un entorno aislado, nunca directamente encima de producción.
-2. Verifica recuentos, relaciones, políticas RLS y acceso con una cuenta de prueba.
-3. Reaplica el registro externo de eliminaciones para no recuperar respuestas borradas.
-4. Cambia la aplicación al entorno restaurado solo después del guion de aceptación.
-5. Revoca credenciales temporales y documenta fecha, alcance y resultado.
-
-## Reversión
-
-Una versión de aplicación puede volver al despliegue estable anterior de Vercel. Las migraciones se diseñan de forma aditiva: revertir la aplicación no revierte la base de datos. Si una migración necesita una retirada destructiva, se hará en una versión posterior y después de verificar las copias.
+Restaura siempre en un entorno aislado, verifica recuentos, relaciones, archivos y acceso, y cambia el tráfico solo después de completar la aceptación. Revoca credenciales temporales y documenta fecha, alcance y resultado.
 
 ## Cambio de administrador
 
-Verifica primero la nueva identidad de Google. En una transacción SQL, añade el nuevo UUID a `admin_users`, desactiva el anterior y cambia `ADMIN_EMAIL`. Después revoca las sesiones del usuario anterior en Supabase Auth y prueba el acceso nuevo antes de retirar las credenciales de emergencia.
+Actualiza `ADMIN_EMAIL`, inicia sesión con la nueva cuenta Google y comprueba que se ha creado en `admin_users`. Desactiva el usuario anterior y elimina sus sesiones de PostgreSQL.
 
-## Traslado futuro a Docker
+## Reversión
 
-Ensaya primero la exportación y restauración en un servidor de pruebas. Fija las mismas versiones, configura almacenamiento persistente, proxy inverso, HTTPS, SMTP, Google OAuth, claves JWT y copias externas. Mantén el despliegue anterior disponible durante la ventana de cambio y no cambies DNS hasta verificar datos, acceso y envíos.
+Vuelve al commit anterior y reconstruye la imagen con `docker compose up -d --build`. No borres los volúmenes: contienen los datos y facturas.

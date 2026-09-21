@@ -5,8 +5,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
-import { isDemoMode } from "@/lib/supabase/config";
-import { createSessionClient } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/local-config";
+import { createSessionClient } from "@/lib/db-client";
 
 const optionalName = z.union([
   z.literal(""),
@@ -265,8 +265,8 @@ export async function addFollowup(formData: FormData) {
   const responseId = input.data.responseId || null;
   const nextContactAt = madridLocalToIso(input.data.nextContactAt);
   if (!isDemoMode()) {
-    const supabase = await createSessionClient();
-    const { error } = await supabase.rpc("register_followup", {
+    const database = await createSessionClient();
+    const { error } = await database.rpc("register_followup", {
       p_proposal_id: proposalId,
       p_response_id: responseId,
       p_channel: channel,
@@ -360,7 +360,7 @@ export async function archiveManagedWebsite(formData: FormData) {
 export async function saveManagedDomain(formData: FormData) {
   await requireAdmin(); const input = domainSchema.safeParse(Object.fromEntries(formData)); if (!input.success) invalidAction(); const data = input.data;
   const payload = { name: data.name.toLowerCase(), provider: data.provider || null, contracted_on: data.contractedOn || null, next_renewal_on: data.nextRenewalOn || null, auto_renew: data.autoRenew === "on", updated_at: new Date().toISOString() };
-  if (!isDemoMode()) { const supabase = await createSessionClient(); const result = data.id ? await supabase.from("managed_domains").update(payload).eq("id", data.id) : await supabase.from("managed_domains").insert({ website_id: data.websiteId, ...payload }); if (result.error) throw new Error("No se ha podido guardar el dominio."); }
+  if (!isDemoMode()) { const database = await createSessionClient(); const result = data.id ? await database.from("managed_domains").update(payload).eq("id", data.id) : await database.from("managed_domains").insert({ website_id: data.websiteId, ...payload }); if (result.error) throw new Error("No se ha podido guardar el dominio."); }
   else { const website = (await import("@/lib/domain-store")).demoWebsites().find((item) => item.id === data.websiteId); if (website) { const existing = data.id ? website.domains.find((domain) => domain.id === data.id) : null; if (existing) Object.assign(existing, { name: data.name.toLowerCase(), provider: data.provider || undefined, contractedOn: data.contractedOn || undefined, nextRenewalOn: data.nextRenewalOn || undefined, autoRenew: data.autoRenew === "on" }); else website.domains.push({ id: crypto.randomUUID(), websiteId: data.websiteId, name: data.name.toLowerCase(), provider: data.provider || undefined, contractedOn: data.contractedOn || undefined, nextRenewalOn: data.nextRenewalOn || undefined, autoRenew: data.autoRenew === "on", renewalStatus: "unknown" }); website.domainCount = website.domains.length; } }
   revalidatePath("/admin/dominios"); revalidatePath(`/admin/dominios/${data.websiteId}`);
 }

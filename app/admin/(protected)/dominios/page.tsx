@@ -14,7 +14,7 @@ export default async function DomainsPage({ searchParams }: { searchParams: Prom
   const renewals = websites.filter((website) => website.domains.some((domain) => ["soon", "today", "overdue"].includes(domain.renewalStatus))).length;
   return <>
     <div className={styles.topline}><div><h1>Dominios</h1><p>Webs activas, renovaciones y mantenimiento.</p></div><Link className="button button-primary" href="/admin/dominios/nueva">Nueva web</Link></div>
-    {loadError && <p className="notice error-notice">La sección necesita la migración de dominios de Supabase. Cuando esté aplicada, los datos y facturas aparecerán aquí.</p>}
+    {loadError && <p className="notice error-notice">No se ha podido cargar la base de datos local. Cuando esté disponible, los datos y facturas aparecerán aquí.</p>}
     <section className={styles.stats} aria-label="Indicadores de dominios">
       <div className={styles.stat}><strong>{websites.length}</strong><span>Webs gestionadas</span></div>
       <div className={styles.stat}><strong>{pending}</strong><span>Con meses pendientes</span></div>

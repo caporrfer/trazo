@@ -9,8 +9,8 @@ import type { AdminProposal, AdminResponse, ProposalPublic } from "./types";
 import type { ManagedWebsite, ManagedDomain, MaintenancePayment } from "./types";
 import { activeMetrics, daysToRenewal, renewalStatus } from "./domains";
 import { demoWebsites } from "./domain-store";
-import { hasSupabaseConfig, isDemoMode } from "./supabase/config";
-import { createServiceClient, createSessionClient } from "./supabase/server";
+import { hasLocalConfig, isDemoMode } from "./local-config";
+import { createServiceClient, createSessionClient } from "./db-client";
 
 function mapProposal(row: Record<string, unknown>): ProposalPublic {
   const business = row.businesses as {
@@ -32,7 +32,7 @@ export async function getPublicProposal(
   slug: string,
 ): Promise<ProposalPublic | null> {
   if (isDemoMode() && slug === demoProposal.slug) return demoProposal;
-  if (!hasSupabaseConfig()) return null;
+  if (!hasLocalConfig()) return null;
   const { data } = await createServiceClient()
     .from("proposals")
     .select(
@@ -55,7 +55,7 @@ export async function getLegacyPublicProposal(
     token === demoProposalToken
   )
     return demoProposal;
-  if (!hasSupabaseConfig()) return null;
+  if (!hasLocalConfig()) return null;
   const { data } = await createServiceClient()
     .from("proposals")
     .select(
@@ -70,7 +70,7 @@ export async function getLegacyPublicProposal(
 }
 
 export async function listAdminProposals(): Promise<AdminProposal[]> {
-  if (isDemoMode() || !hasSupabaseConfig()) {
+  if (isDemoMode() || !hasLocalConfig()) {
     const responses = demoResponses();
     return demoAdminProposals.map((proposal) => ({
       ...proposal,
@@ -105,7 +105,7 @@ export async function listAdminProposals(): Promise<AdminProposal[]> {
 }
 
 export async function listAdminResponses(): Promise<AdminResponse[]> {
-  if (isDemoMode() || !hasSupabaseConfig()) return demoResponses();
+  if (isDemoMode() || !hasLocalConfig()) return demoResponses();
   const { data, error } = await (await createSessionClient())
     .from("response_overview")
     .select("*")
@@ -167,7 +167,7 @@ function normalizeSearch(value: string) {
 
 export async function searchAdminProposals(filters: ProposalFilters) {
   const bounds = pageBounds(filters.page, filters.pageSize);
-  if (isDemoMode() || !hasSupabaseConfig()) {
+  if (isDemoMode() || !hasLocalConfig()) {
     let items = await listAdminProposals();
     if (filters.q)
       items = items.filter((item) =>
@@ -222,7 +222,7 @@ export async function searchAdminProposals(filters: ProposalFilters) {
 
 export async function searchAdminResponses(filters: ResponseFilters) {
   const bounds = pageBounds(filters.page, filters.pageSize);
-  if (isDemoMode() || !hasSupabaseConfig()) {
+  if (isDemoMode() || !hasLocalConfig()) {
     let items = await listAdminResponses();
     if (filters.q)
       items = items.filter((item) =>
@@ -303,7 +303,7 @@ export async function getAdminResponse(id: string) {
 }
 
 export async function listAdminNotes(proposalId: string) {
-  if (isDemoMode() || !hasSupabaseConfig())
+  if (isDemoMode() || !hasLocalConfig())
     return [] as {
       id: string;
       body: string;
@@ -325,7 +325,7 @@ export async function listAdminNotes(proposalId: string) {
 }
 
 export async function listAdminFollowups(proposalId: string) {
-  if (isDemoMode() || !hasSupabaseConfig())
+  if (isDemoMode() || !hasLocalConfig())
     return [] as {
       id: string;
       channel: string;
@@ -372,7 +372,7 @@ function mapManagedWebsite(row: Record<string, any>): ManagedWebsite {
 }
 
 export async function listAdminWebsites(filters: { q?: string; pending?: boolean; renewal?: boolean } = {}) {
-  if (isDemoMode() || !hasSupabaseConfig()) {
+  if (isDemoMode() || !hasLocalConfig()) {
     let items = demoWebsites().filter((item) => !item.archived);
     if (filters.q) { const q = normalizeSearch(filters.q); items = items.filter((item) => normalizeSearch(item.businessName).includes(q) || item.domains.some((domain) => normalizeSearch(domain.name).includes(q))); }
     if (filters.pending) items = items.filter((item) => item.pendingMonths > 0);
@@ -390,7 +390,7 @@ export async function listAdminWebsites(filters: { q?: string; pending?: boolean
 }
 
 export async function getAdminWebsite(id: string) {
-  if (isDemoMode() || !hasSupabaseConfig()) return demoWebsites().find((item) => item.id === id) || null;
+  if (isDemoMode() || !hasLocalConfig()) return demoWebsites().find((item) => item.id === id) || null;
   const { data, error } = await (await createSessionClient()).from("managed_websites").select("*, businesses(name), managed_domains(*, domain_events(*)), maintenance_payments(*, maintenance_payment_periods(*))").eq("id", id).maybeSingle();
   if (error) throw error;
   return data ? mapManagedWebsite(data as Record<string, any>) : null;

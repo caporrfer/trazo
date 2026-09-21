@@ -1,0 +1,3 @@
+import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "node:crypto";
+export async function GET(request: NextRequest) { const state=randomBytes(24).toString("base64url"); const callback=`${request.nextUrl.origin}/auth/callback`; const url=new URL("https://accounts.google.com/o/oauth2/v2/auth"); url.search=new URLSearchParams({client_id:process.env.GOOGLE_CLIENT_ID||"",redirect_uri:callback,response_type:"code",scope:"openid email",state,access_type:"online",prompt:"select_account"}).toString(); const response=NextResponse.redirect(url); response.cookies.set("trazo_oauth_state",state,{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV === "production",maxAge:600,path:"/"}); return response; }

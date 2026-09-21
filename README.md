@@ -18,15 +18,11 @@ Propuesta local: `http://localhost:3000/propuesta/restaurante-paco`
 
 Dashboard local: `http://localhost:3000/admin`
 
-## Supabase
+## Servidor propio
 
-1. Crea un proyecto europeo para cada entorno.
-2. Aplica las migraciones de `supabase/migrations`.
-3. Configura Google OAuth y añade las URL de callback de cada entorno.
-4. Inicia sesión una vez y añade ese usuario a `public.admin_users` usando la consulta comentada al final de la migración.
-5. Configura las variables de `.env.example` en Vercel.
+La aplicación utiliza PostgreSQL y un directorio privado local para las facturas. No necesita Supabase ni otro servicio de datos gestionado. Copia `.env.example` a `.env`, define `POSTGRES_PASSWORD`, `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ADMIN_EMAIL`, `RATE_LIMIT_SECRET` y `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, y arranca con `docker compose up -d --build`.
 
-La clave `SUPABASE_SERVICE_ROLE_KEY` solo puede existir en el servidor. Nunca debe usar el prefijo `NEXT_PUBLIC_`.
+Registra en Google Cloud el callback `https://tu-dominio/auth/callback`. Las sesiones y permisos se guardan en PostgreSQL; la cuenta se crea al primer acceso con el correo indicado en `ADMIN_EMAIL`.
 
 En Docker, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` debe ser una clave estable y compartida por todas las réplicas. Si cambia, las acciones generadas por una versión anterior dejan de ser válidas.
 
@@ -51,8 +47,8 @@ La misma aplicación se empaqueta con la salida `standalone` de Next.js:
 docker compose up --build
 ```
 
-La migración futura del backend gestionado a Supabase autoalojado debe ensayarse con una copia antes del cambio de DNS. Hay que volver a configurar Google, secretos, SMTP y claves JWT, y solicitar un nuevo inicio de sesión.
+El procedimiento de actualización, copias, restauración e importación de datos está en [`docs/server-update.md`](docs/server-update.md).
 
 ## Producción
 
-Antes de publicar, configura `NEXT_PUBLIC_APP_URL=https://formulariotrazo.es`, completa los datos legales, cambia `RATE_LIMIT_SECRET`, verifica copias externas y ejecuta el guion de aceptación. Las previsualizaciones deben utilizar un proyecto Supabase de pruebas y nunca las credenciales de producción.
+Antes de publicar, configura `NEXT_PUBLIC_APP_URL=https://formulariotrazo.es`, completa los datos legales, cambia `RATE_LIMIT_SECRET`, verifica copias externas y ejecuta el guion de aceptación.

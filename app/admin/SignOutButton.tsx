@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
 import styles from "@/components/admin/Admin.module.css";
 
 export function SignOutButton({ demo }: { demo: boolean }) {
@@ -11,7 +10,7 @@ export function SignOutButton({ demo }: { demo: boolean }) {
       className={styles.signout}
       type="button"
       onClick={async () => {
-        if (!demo) await createBrowserSupabase().auth.signOut();
+        if (!demo) await fetch("/auth/signout", { method: "POST" });
         router.push("/admin/acceso");
         router.refresh();
       }}

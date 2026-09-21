@@ -18,7 +18,7 @@ export default async function ProtectedAdminLayout({
     <div className={styles.shell}>
       {admin.demo && (
         <aside className={styles.demoBanner}>
-          Modo de demostración local: configura Supabase para guardar datos
+          Modo de demostración local: configura PostgreSQL para guardar datos
           reales.
         </aside>
       )}

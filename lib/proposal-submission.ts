@@ -4,8 +4,8 @@ import { createHmac } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { addDemoResponse } from "@/lib/demo-store";
 import { sanitizeForFlow } from "@/lib/flow";
-import { hasSupabaseConfig, isDemoMode } from "@/lib/supabase/config";
-import { createServiceClient } from "@/lib/supabase/server";
+import { hasLocalConfig, isDemoMode } from "@/lib/local-config";
+import { createServiceClient } from "@/lib/db-client";
 import type { ProposalPublic } from "@/lib/types";
 import { submissionSchema } from "@/lib/validation";
 
@@ -131,7 +131,7 @@ export async function submitProposalResponse(
       { status: 201 },
     );
   }
-  if (!hasSupabaseConfig() || !process.env.RATE_LIMIT_SECRET)
+  if (!hasLocalConfig() || !process.env.RATE_LIMIT_SECRET)
     return NextResponse.json(
       {
         message:

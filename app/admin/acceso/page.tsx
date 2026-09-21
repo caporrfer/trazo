@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Brand } from "@/components/Brand";
 import { getAdmin } from "@/lib/auth";
-import { hasSupabaseConfig, isDemoMode } from "@/lib/supabase/config";
+import { hasLocalConfig, isDemoMode } from "@/lib/local-config";
 import { LoginButton } from "./LoginButton";
 
 export const metadata = {
@@ -12,7 +12,7 @@ export const metadata = {
 export default async function LoginPage() {
   const admin = await getAdmin();
   if (admin) redirect("/admin");
-  const configured = hasSupabaseConfig();
+  const configured = hasLocalConfig();
   return (
     <main id="contenido" className="home-shell">
       <div className="home-card">
@@ -28,7 +28,7 @@ export default async function LoginPage() {
         ) : (
           <p className="notice">
             El acceso estará disponible cuando se configuren las variables de
-            Supabase y la cuenta administradora.
+            PostgreSQL local y la cuenta administradora.
           </p>
         )}
         {isDemoMode() && (
