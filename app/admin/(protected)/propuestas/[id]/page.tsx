@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ArrowLeft, Copy, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";

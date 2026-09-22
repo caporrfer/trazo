@@ -4,8 +4,8 @@ import { createHmac } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { addDemoResponse } from "@/lib/demo-store";
 import { sanitizeForFlow } from "@/lib/flow";
-import { hasSupabaseConfig, isDemoMode } from "@/lib/supabase/config";
-import { createServiceClient } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/runtime-config";
+import { createServiceClient } from "@/lib/data";
 import type { ProposalPublic } from "@/lib/types";
 import { submissionSchema } from "@/lib/validation";
 
@@ -131,42 +131,16 @@ export async function submitProposalResponse(
       { status: 201 },
     );
   }
-  if (!hasSupabaseConfig() || !process.env.RATE_LIMIT_SECRET)
-    return NextResponse.json(
-      {
-        message:
-          "El formulario no está configurado temporalmente. Inténtalo más tarde.",
-      },
-      { status: 503 },
-    );
-  const { data, error } = await createServiceClient().rpc(
-    "submit_proposal_response",
-    {
-      p_proposal_id: proposal.id,
-      p_request_id: parsed.data.requestId,
-      p_form_version: parsed.data.formVersion,
-      p_payload: answers,
-      p_ip_hash: ipHash,
-    },
-  );
-  if (error) {
-    const status = error.message.includes("RATE_LIMIT")
-      ? 429
-      : error.message.includes("INACTIVE") ||
-          error.message.includes("FORM_VERSION")
-        ? 409
-        : 500;
-    return NextResponse.json(
-      {
-        message:
-          status === 429
-            ? "Hemos recibido varios intentos seguidos. Espera unos minutos y vuelve a intentarlo."
-            : status === 409
-              ? "Esta propuesta ya no admite respuestas."
-              : "No hemos podido guardar la respuesta. Tu borrador sigue aquí; inténtalo de nuevo.",
-      },
-      { status },
-    );
-  }
-  return NextResponse.json(data, { status: 201 });
+  if (!process.env.RATE_LIMIT_SECRET)
+    return NextResponse.json({ message: "El formulario no está configurado temporalmente. Inténtalo más tarde." }, { status: 503 });
+  const client = createServiceClient();
+  const existing = await client.from("responses").select("id").eq("proposal_id", proposal.id).eq("request_id", parsed.data.requestId).maybeSingle();
+  if (existing.data?.id) return NextResponse.json({ id: existing.data.id, duplicate: true }, { status: 200 });
+  const id = crypto.randomUUID();
+  const saved = await client.from("responses").insert({ id, proposal_id: proposal.id, request_id: parsed.data.requestId, form_version: parsed.data.formVersion, answers: JSON.stringify(answers), intent: answers.intent || "information", impression: answers.impression || null, goal: answers.goal || null, selected_plan: answers.plan || null, respondent_name: answers.respondentName || null, relationship: answers.relationship || null, decision_role: answers.decisionRole || null, decline_reason: answers.declineReason || null, is_read: 0, followup_status: "none", created_at: new Date().toISOString() });
+  if (saved.error) return NextResponse.json({ message: "No hemos podido guardar la respuesta. Tu borrador sigue aquí; inténtalo de nuevo." }, { status: 500 });
+  if (answers.contactMethod) await client.from("response_contacts").insert({ response_id: id, method: answers.contactMethod, contact_value: answers.contactValue || null, preferred_time: answers.contactTime || null, preferred_datetime: answers.preferredDateTime || null, relay_email: answers.relayEmail || null });
+  if (answers.domainStatus) await client.from("domain_preferences").insert({ response_id: id, status: answers.domainStatus, current_domain: answers.currentDomain || null, desired_domains: JSON.stringify(answers.desiredDomains || []) });
+  for (const category of answers.changes || []) await client.from("response_changes").insert({ response_id: id, category });
+  return NextResponse.json({ id, duplicate: false }, { status: 201 });
 }
