@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LogOut } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { Brand } from "@/components/Brand";
@@ -14,16 +15,16 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
     <div className={`${styles.shell} admin-shell`}>
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <Brand href="/admin" compact inverse />
+          <Brand href="/admin" compact />
+          <AdminNav />
           <form action={logoutAction}>
-            <button className={styles.signout} type="submit">Cerrar sesión</button>
+            <button className={styles.signout} type="submit" aria-label="Cerrar sesión" title="Cerrar sesión">
+              <LogOut size={18} aria-hidden="true" />
+            </button>
           </form>
         </div>
       </header>
-      <div className={styles.layout}>
-        <AdminNav />
-        <main id="contenido" className={styles.main}>{children}</main>
-      </div>
+      <main id="contenido" className={styles.main}>{children}</main>
     </div>
   );
 }

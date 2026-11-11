@@ -3,7 +3,9 @@
 Web pública de Trazo (formulariotrazo.es) y panel privado para gestionar las webs que mantenemos.
 
 - `/` — portada: servicios, precios y contacto.
-- `/admin` — panel con contraseña: webs activas, dominios y renovaciones, costes, cobros y saldo pendiente de cada cliente.
+- `/admin` — panel privado de **solo lectura**: webs activas, dominios y renovaciones, costes, cobros y saldo pendiente de cada cliente.
+
+Los datos se modifican desde el servidor con `scripts/db.mjs` (ver `context.md`).
 
 ## Desarrollo
 

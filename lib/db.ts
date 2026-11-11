@@ -223,71 +223,14 @@ export function getSite(id: string) {
   return { ...summarize(site, domains, costs, paid), costs, payments };
 }
 
-export type SiteInput = Omit<Site, "id" | "archived">;
-
-export function createSite(input: SiteInput) {
-  const id = randomUUID();
-  const now = new Date().toISOString();
-  db().prepare(`INSERT INTO sites (id,name,domain,url,kind,started_on,ended_on,monthly_cents,setup_cents,hosting,notes,created_at,updated_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(id, input.name, input.domain, input.url, input.kind, input.startedOn, input.endedOn,
-    input.monthlyCents, input.setupCents, input.hosting, input.notes, now, now);
-  return id;
-}
-
-export function updateSite(id: string, input: SiteInput) {
-  db().prepare(`UPDATE sites SET name=?,domain=?,url=?,kind=?,started_on=?,ended_on=?,monthly_cents=?,setup_cents=?,hosting=?,notes=?,updated_at=? WHERE id=?`)
-    .run(input.name, input.domain, input.url, input.kind, input.startedOn, input.endedOn, input.monthlyCents, input.setupCents,
-      input.hosting, input.notes, new Date().toISOString(), id);
-}
-
-export function setSiteArchived(id: string, archived: boolean) {
-  db().prepare("UPDATE sites SET archived=?, updated_at=? WHERE id=?").run(archived ? 1 : 0, new Date().toISOString(), id);
-}
-
-export function deleteSite(id: string) {
-  db().prepare("DELETE FROM sites WHERE id=?").run(id);
-}
-
-export function saveDomain(input: Omit<Domain, "id"> & { id?: string }) {
-  if (input.id) {
-    db().prepare("UPDATE domains SET name=?,registrar=?,renews_on=?,yearly_cents=?,auto_renew=?,notes=? WHERE id=? AND site_id=?")
-      .run(input.name, input.registrar, input.renewsOn, input.yearlyCents, input.autoRenew ? 1 : 0, input.notes, input.id, input.siteId);
-    return;
-  }
-  db().prepare("INSERT INTO domains (id,site_id,name,registrar,renews_on,yearly_cents,auto_renew,notes,created_at) VALUES (?,?,?,?,?,?,?,?,?)")
-    .run(randomUUID(), input.siteId, input.name, input.registrar, input.renewsOn, input.yearlyCents, input.autoRenew ? 1 : 0, input.notes, new Date().toISOString());
-}
-
-export function deleteDomain(id: string) {
-  db().prepare("DELETE FROM domains WHERE id=?").run(id);
-}
-
 export function listCosts() {
   return (db().prepare("SELECT c.* FROM costs c LEFT JOIN sites s ON s.id=c.site_id ORDER BY s.name IS NOT NULL, s.name, c.concept").all() as Row[]).map(mapCost);
-}
-
-export function addCost(input: Omit<Cost, "id">) {
-  db().prepare("INSERT INTO costs (id,site_id,concept,provider,amount_cents,period,notes,created_at) VALUES (?,?,?,?,?,?,?,?)")
-    .run(randomUUID(), input.siteId, input.concept, input.provider, input.amountCents, input.period, input.notes, new Date().toISOString());
-}
-
-export function deleteCost(id: string) {
-  db().prepare("DELETE FROM costs WHERE id=?").run(id);
 }
 
 export function listPayments(siteId?: string) {
   const sql = `SELECT * FROM payments ${siteId ? "WHERE site_id=?" : ""} ORDER BY paid_on DESC, created_at DESC`;
   const rows = (siteId ? db().prepare(sql).all(siteId) : db().prepare(sql).all()) as Row[];
   return rows.map(mapPayment);
-}
-
-export function addPayment(input: Omit<Payment, "id">) {
-  db().prepare("INSERT INTO payments (id,site_id,paid_on,amount_cents,concept,notes,created_at) VALUES (?,?,?,?,?,?,?)")
-    .run(randomUUID(), input.siteId, input.paidOn, input.amountCents, input.concept, input.notes, new Date().toISOString());
-}
-
-export function deletePayment(id: string) {
-  db().prepare("DELETE FROM payments WHERE id=?").run(id);
 }
 
 export function upcomingRenewals(withinDays = 60) {
