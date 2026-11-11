@@ -20,44 +20,28 @@ export default function PrivacyPage() {
       )}
       <h2>Responsable y finalidad</h2>
       <p>
-        <strong>{legalName}</strong> utiliza los datos que facilitas para
-        recoger tu valoración sobre la propuesta web y, únicamente si lo
-        solicitas, ponerse en contacto contigo por el medio elegido.
+        <strong>{legalName}</strong> es responsable de esta web. Si nos llamas
+        o nos escribes, usaremos tus datos únicamente para responderte y, si
+        lo pides, preparar un presupuesto o prestarte el servicio contratado.
       </p>
       <h2>Datos que tratamos</h2>
       <p>
-        Guardamos las respuestas que envías y los datos de contacto que decides
-        facilitar. El borrador previo se conserva solo en tu navegador hasta que
-        lo envías o lo borras.
+        Esta web no tiene formularios, no usa cookies de seguimiento y no
+        recoge datos personales. Solo tratamos los datos que nos facilitas al
+        contactar por teléfono o WhatsApp.
       </p>
-      <h2>Base jurídica</h2>
+      <h2>Base jurídica y conservación</h2>
       <p>
-        Cuando solicitas información, cambios o contacto, el tratamiento se basa
-        en atender las medidas que pides antes de decidir si formalizas un
-        servicio. Si envías únicamente una opinión, la base prevista es el
-        interés legítimo de Trazo en evaluar y mejorar la propuesta, sin usar
-        esa respuesta para publicidad distinta. Puedes oponerte escribiendo al
-        correo indicado más abajo. Estas bases deberán confirmarse en la
-        revisión jurídica previa al lanzamiento.
-      </p>
-      <h2>Conservación y destinatarios</h2>
-      <p>
-        Las respuestas se conservan mientras la propuesta siga abierta y sean
-        necesarias para gestionarla. Al cerrarla se revisan y se eliminan
-        manualmente cuando dejan de ser necesarias, salvo el bloqueo exigido
-        para atender posibles obligaciones o reclamaciones. Los proveedores
-        técnicos de alojamiento y base de datos tratan información
-        exclusivamente para prestar el servicio.
+        El tratamiento se basa en atender tu solicitud y, en su caso, en la
+        relación contractual. Conservamos los datos mientras dure esa relación
+        y durante los plazos que exija la ley. No los cedemos a terceros salvo
+        obligación legal.
       </p>
       <h2>Tus derechos</h2>
       <p>
         Puedes solicitar acceso, rectificación o eliminación, así como ejercer
         los demás derechos previstos en la normativa, escribiendo a{" "}
         <a href={`mailto:${email}`}>{email}</a>.
-      </p>
-      <p>
-        Esta aplicación no utiliza tus respuestas para enviarte publicidad
-        diferente de la conversación que hayas solicitado.
       </p>
       <p>
         Puedes consultar el texto oficial del Reglamento General de Protección

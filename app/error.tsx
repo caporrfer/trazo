@@ -14,7 +14,7 @@ export default function GlobalError({
         <Brand />
         <h1>No hemos podido cargar esta página</h1>
         <p className="lead">
-          Puede ser un fallo temporal. Tu borrador local no se ha eliminado.
+          Puede ser un fallo temporal. Vuelve a intentarlo en unos segundos.
         </p>
         <button className="button button-primary" type="button" onClick={reset}>
           Volver a intentarlo

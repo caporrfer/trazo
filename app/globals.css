@@ -255,7 +255,8 @@ h3 {
   padding: 1.3rem 1rem 2rem;
 }
 
-body:has(.landing-page) .site-footer {
+body:has(.landing-page) .site-footer,
+body:has(.admin-shell) .site-footer {
   display: none;
 }
 .footer-inner {

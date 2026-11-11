@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "hash-password": "node scripts/hash-password.mjs"
   },
   "dependencies": {
     "lucide-react": "1.43.0",

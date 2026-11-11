@@ -6,7 +6,7 @@ export default function Loading() {
       <div className="home-card">
         <Brand />
         <p className="lead" role="status">
-          Cargando la propuesta…
+          Cargando…
         </p>
       </div>
     </main>

@@ -1,58 +1,42 @@
-# Formulario Trazo
+# Trazo
 
-Aplicación nueva para gestionar propuestas web personalizadas, recoger la opinión de negocios locales y organizar el seguimiento desde un dashboard privado.
+Web pública de Trazo (formulariotrazo.es) y panel privado para gestionar las webs que mantenemos.
 
-## Desarrollo local
+- `/` — portada: servicios, precios y contacto.
+- `/admin` — panel con contraseña: webs activas, dominios y renovaciones, costes, cobros y saldo pendiente de cada cliente.
 
-Requiere Node.js 22 LTS.
+## Desarrollo
 
 ```bash
+cp .env.example .env.local   # rellena ADMIN_PASSWORD_HASH y AUTH_SESSION_SECRET
 npm install
-cp .env.example .env.local
 npm run dev
 ```
 
-Con `TRAZO_DEMO_MODE=true` se habilitan una propuesta y un dashboard de demostración. Este modo se desactiva automáticamente en compilaciones de producción.
+Comprobaciones: `npm run lint && npm run typecheck && npm test && npm run build`.
 
-Propuesta local: `http://localhost:3000/propuesta/restaurante-paco`
+## Datos
 
-Dashboard local: `http://localhost:3000/admin`
+SQLite (`node:sqlite`) en `TRAZO_DB_PATH`. El esquema se crea solo al arrancar (`lib/db.ts`).
+La primera vez también migra las webs del panel antiguo y borra las tablas de propuestas.
 
-## Supabase
+Saldo de cada web: `desarrollo + cuota × meses empezados desde el alta − cobros`. La cuota se devenga al inicio de cada mes (`lib/billing.ts`).
 
-1. Crea un proyecto europeo para cada entorno.
-2. Aplica las migraciones de `supabase/migrations`.
-3. Configura Google OAuth y añade las URL de callback de cada entorno.
-4. Inicia sesión una vez y añade ese usuario a `public.admin_users` usando la consulta comentada al final de la migración.
-5. Configura las variables de `.env.example` en Vercel.
-
-La clave `SUPABASE_SERVICE_ROLE_KEY` solo puede existir en el servidor. Nunca debe usar el prefijo `NEXT_PUBLIC_`.
-
-En Docker, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` debe ser una clave estable y compartida por todas las réplicas. Si cambia, las acciones generadas por una versión anterior dejan de ser válidas.
-
-## Verificación
+## Cambiar la contraseña
 
 ```bash
-npm run lint
-npm run typecheck
-npm test
-npm run build
-npm run test:e2e
+node scripts/hash-password.mjs 'nueva contraseña'
 ```
 
-El guion manual está en `docs/acceptance-checklist.md`.
-El procedimiento de producción, copias, recuperación y cambio de administrador está en `docs/production-runbook.md`.
-
-## Docker
-
-La misma aplicación se empaqueta con la salida `standalone` de Next.js:
-
-```bash
-docker compose up --build
-```
-
-La migración futura del backend gestionado a Supabase autoalojado debe ensayarse con una copia antes del cambio de DNS. Hay que volver a configurar Google, secretos, SMTP y claves JWT, y solicitar un nuevo inicio de sesión.
+Pon el resultado en `ADMIN_PASSWORD_HASH` y reinicia el contenedor. Las sesiones duran 12 horas.
+Tras 5 intentos fallidos desde una IP, el acceso se bloquea 15 minutos.
 
 ## Producción
 
-Antes de publicar, configura `NEXT_PUBLIC_APP_URL=https://formulariotrazo.es`, completa los datos legales, cambia `RATE_LIMIT_SECRET`, verifica copias externas y ejecuta el guion de aceptación. Las previsualizaciones deben utilizar un proyecto Supabase de pruebas y nunca las credenciales de producción.
+Docker en el VPS: la imagen `formulario-trazo:modern-sqlite` se construye desde este repo.
+El compose está en `~/docker/formulario-trazo-production` y los datos en el volumen `formulario-trazo-production-trazo-data`.
+
+```bash
+docker build -t formulario-trazo:modern-sqlite .
+cd ~/docker/formulario-trazo-production && docker compose up -d
+```

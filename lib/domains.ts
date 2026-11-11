@@ -1,4 +1,4 @@
-import type { ManagedDomain, ManagedWebsite } from "./types";
+export type RenewalStatus = "unknown" | "overdue" | "today" | "soon" | "active";
 
 const dayMs = 86_400_000;
 
@@ -30,7 +30,7 @@ export function periodsFor(start: string, count: number) {
   });
 }
 
-export function activeMetrics(website: Pick<ManagedWebsite, "activatedOn" | "deactivatedOn">, today = new Date()) {
+export function activeMetrics(website: { activatedOn?: string | null; deactivatedOn?: string | null }, today = new Date()) {
   if (!website.activatedOn) return {};
   const end = website.deactivatedOn ? parseDate(website.deactivatedOn) : new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
   const start = parseDate(website.activatedOn);
@@ -42,7 +42,7 @@ export function activeMetrics(website: Pick<ManagedWebsite, "activatedOn" | "dea
   return { activeDays, completeMonths, remainingDays };
 }
 
-export function renewalStatus(nextRenewalOn?: string, today = new Date()): ManagedDomain["renewalStatus"] {
+export function renewalStatus(nextRenewalOn?: string, today = new Date()): RenewalStatus {
   if (!nextRenewalOn) return "unknown";
   const current = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
   const days = Math.ceil((parseDate(nextRenewalOn).getTime() - current.getTime()) / dayMs);

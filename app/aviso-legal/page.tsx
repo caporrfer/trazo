@@ -22,17 +22,15 @@ export default function LegalPage() {
         <br />
         {process.env.TRAZO_ADDRESS || "[Domicilio pendiente]"}
       </p>
-      <h2>Uso del servicio</h2>
+      <h2>Objeto</h2>
       <p>
-        Los enlaces de propuesta están destinados al negocio indicado y permiten
-        enviar una valoración no contractual. Elegir una tarifa no supone una
-        contratación ni genera un pago.
+        Esta web informa sobre nuestros servicios de diseño y desarrollo de
+        páginas web, tiendas online, posicionamiento y mantenimiento.
       </p>
-      <h2>Condiciones informativas</h2>
+      <h2>Precios</h2>
       <p>
-        La disponibilidad de dominios y el alcance final de cualquier desarrollo
-        se confirman antes de formalizar un servicio. Las tarifas mostradas
-        sirven para conocer la opción que interesa al negocio.
+        Los precios publicados son orientativos. El alcance y el precio final
+        de cada proyecto se confirman antes de empezar.
       </p>
     </main>
   );
